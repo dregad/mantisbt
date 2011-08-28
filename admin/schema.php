@@ -44,11 +44,11 @@ function installer_db_now() {
 switch( $GLOBALS['g_db_type'] ) {
 	case 'oci8':
 		$t_notnull = "";
-		$t_timestamp = 'timestamp' . installer_db_now();
+		$t_timestamp = "timestamp" . installer_db_now();
 		break;
 	default:
 		$t_notnull = 'NOTNULL';
-		$t_timestamp = installer_db_now();
+		$t_timestamp = "'" . installer_db_now() . "'";
 		break;
 }
 
@@ -356,7 +356,7 @@ $upgrade[] = Array('CreateIndexSQL',Array('idx_access',db_get_table('mantis_user
 
 $upgrade[] = Array('InsertData', Array( db_get_table('mantis_user_table'),
 	"(username, realname, email, password, date_created, last_visit, enabled, protected, access_level, login_count, lost_password_request_count, failed_login_count, cookie_string) VALUES
-		('administrator', '', 'root@localhost', '63a9f0ea7bb98050796b649e85481845', '" . $t_timestamp . "', '" . $t_timestamp . "', '1', '0', 90, 3, 0, 0, '" .
+		('administrator', '', 'root@localhost', '63a9f0ea7bb98050796b649e85481845', " . $t_timestamp . ", " . $t_timestamp . ", '1', '0', 90, 3, 0, 0, '" .
 			md5( mt_rand( 0, mt_getrandmax() ) + mt_rand( 0, mt_getrandmax() ) ) . md5( time() ) . "')" ) );
 
 $upgrade[] = Array('AlterColumnSQL', Array( db_get_table( 'mantis_bug_history_table' ), "old_value C(255) $t_notnull" ) );
