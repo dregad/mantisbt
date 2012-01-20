@@ -132,7 +132,7 @@ print_manage_menu( 'manage_tags_page.php' ); ?>
 			<td><?php echo lang_get( 'tag_created' ) ?></td>
 			<td><?php echo lang_get( 'tag_updated' ) ?></td>
 		</tr><?php
-		foreach ( $t_result as $t_tag_row ) {
+		while( $t_tag_row = db_fetch_array( $t_result ) ) {
 			$t_tag_name = string_display_line( $t_tag_row['name'] );
 			$t_tag_description = string_display( $t_tag_row['description'] ); ?>
 		<tr <?php echo helper_alternate_class() ?>><?php
