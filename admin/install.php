@@ -306,21 +306,11 @@ if( 2 == $t_install_state ) {
 	print_test( 'Checking PHP support for database type', db_check_database_support( $f_db_type ), true, 'database is not supported by PHP. Check that it has been compiled into your server.' );
 
 	# ADOdb library version check
-	# PostgreSQL, Oracle and MSSQL require at least 5.18.
-	# @TODO dregad 20131001 req is 5.19 actually, but must wait until official release
-	# MySQL should be fine with 5.10
+	# PostgreSQL, Oracle and MSSQL require at least 5.19. MySQL should be fine
+	# with 5.10 but to simplify we align to the requirement of the others.
 	$t_adodb_version = substr( $ADODB_vers, 1, strpos( $ADODB_vers, ' ' ) - 1 );
-	switch( $f_db_type ) {
-		case 'mssqlnative':
-		case 'oci8' :
-		case 'pgsql' :
-			$t_adodb_min = '5.18';
-			break;
-		default:
-			$t_adodb_min = '5.10';
-	}
-	print_test( "Checking ADOdb Library version is at least $t_adodb_min",
-		version_compare( $t_adodb_version, $t_adodb_min, '>=' ),
+	print_test( "Checking ADOdb Library version is at least " . DB_MIN_VERSION_ADODB,
+		version_compare( $t_adodb_version, DB_MIN_VERSION_ADODB, '>=' ),
 		true,
 		'Current version: ' . $ADODB_vers
 	);
@@ -1026,7 +1016,7 @@ if( 5 == $t_install_state ) {
 	foreach( $t_prefix_defaults['other'] as $t_key => $t_value ) {
 		$t_new_value = ${'f_' . $t_key};
 		if( $t_new_value != $t_value ) {
-			$t_config .= '$' . str_pad( $t_key, 25 ) . "= '" . ${'f_' . $t_key} . "';\n";
+			$t_config .= '$g_' . str_pad( $t_key, 25 ) . "= '" . ${'f_' . $t_key} . "';\n";
 			$t_insert_line = true;
 		}
 	}
