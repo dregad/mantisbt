@@ -1873,8 +1873,35 @@ function print_timezone_option_list( $p_timezone ) {
  * @param string $p_unit
  * @return string
  */
-function get_filesize_info( $p_size, $p_unit ) {
-	return sprintf( lang_get( 'file_size_info' ), number_format( $p_size ), $p_unit );
+function get_filesize_info( $p_size, $p_unit_type = BINARY, $p_power = BYTE ) {
+	switch ( $p_unit_type ) {
+		case BINARY:
+			$t_system = 'binary';
+			break;
+		case DECIMAL:
+			$t_system = 'decimal';
+			break;
+		default:
+			$t_system = 'binary';
+	}
+	switch ( $p_power ) {
+		case BYTE:
+			$t_unit = 'unit_bytes';
+			$t_divider = 1;
+			break;
+		case KB:
+			$t_unit = 'unit_k_' . $t_system;
+			$t_divider = $p_unit_type;
+			break;
+		case MB:
+			$t_unit = 'unit_m_' . $t_system;
+			$t_divider = pow( $p_unit_type, 2 );
+			break;
+		default:
+			$t_unit = 'unit_bytes';
+			$t_divider = 1;
+	}
+	return sprintf( lang_get( 'file_size_info' ), number_format( $p_size / $t_divider ), lang_get( $t_unit ) ) ;
 }
 
 /**
@@ -1883,10 +1910,10 @@ function get_filesize_info( $p_size, $p_unit ) {
  * @param int $p_divider optional divider, defaults to 1000
  * @param string $p_unit optional language string of unit, defaults to KB
  */
-function print_max_filesize( $p_size, $p_divider = 1000, $p_unit = 'kb' ) {
-	echo '<span class="small" title="' . get_filesize_info( $p_size, lang_get( 'bytes' ) ) . '">';
+function print_max_filesize( $p_size, $p_unit_type, $p_unit_power ) {
+	echo '<span class="small" title="' . get_filesize_info( $p_size ) . '">';
 	echo lang_get( 'max_file_size_label' )
 		. lang_get( 'word_separator' )
-		. get_filesize_info( $p_size / $p_divider, lang_get( $p_unit ) );
+		. get_filesize_info( $p_size, $p_unit_type, $p_unit_power );
 	echo '</span>';
 }

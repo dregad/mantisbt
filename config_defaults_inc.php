@@ -1665,7 +1665,12 @@ $g_attachments_file_permissions = 0400;
  * Also check your PHP settings (default is usually 2MBs)
  * @global int $g_max_file_size
  */
-$g_max_file_size = 5000000;
+$g_max_file_size = 5 * 1024 * 1024;
+
+/**
+ */
+$g_file_size_system = BINARY;
+$g_file_size_unit = KB;
 
 /**
  * Maximum number of files that can be uploaded simultaneously

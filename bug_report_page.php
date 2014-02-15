@@ -599,7 +599,7 @@ print_recently_visited();
 		<th class="category">
 			<label for="file"><?php echo lang_get( $t_file_upload_max_num == 1 ? 'upload_file' : 'upload_files' ) ?></label>
 			<br />
-			<?php echo print_max_filesize( $t_max_file_size ); ?>
+			<?php echo print_max_filesize( $t_max_file_size, config_get('file_size_system'), config_get('file_size_unit') ); ?>
 		</th>
 		<td>
 			<input type="hidden" name="max_file_size" value="<?php echo $t_max_file_size ?>" />
