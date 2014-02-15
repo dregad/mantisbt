@@ -1868,9 +1868,10 @@ function print_timezone_option_list( $p_timezone ) {
 }
 
 /**
- * Return file size information
- * @param int $p_size
- * @param string $p_unit
+ * Returns file size information in units of a chosen system.
+ * @param int $p_size file size in bytes
+ * @param int $p_unit_type base to display sizes (BINARY OR DECIMAL). Defaults to BINARY (1024).
+ * @param int $p_power file size unit in terms of base power (0 for bytes, 1 for kilo, 2 for mega, etc). Defaults to BYTE (0).
  * @return string
  */
 function get_filesize_info( $p_size, $p_unit_type = BINARY, $p_power = BYTE ) {
@@ -1907,8 +1908,8 @@ function get_filesize_info( $p_size, $p_unit_type = BINARY, $p_power = BYTE ) {
 /**
  * Print maximum file size information
  * @param int $p_size in bytes
- * @param int $p_divider optional divider, defaults to 1000
- * @param string $p_unit optional language string of unit, defaults to KB
+ * @param int $p_unit_type system to display file size (base)
+ * @param int $p_unit_power unit in terms of base power
  */
 function print_max_filesize( $p_size, $p_unit_type, $p_unit_power ) {
 	echo '<span class="small" title="' . get_filesize_info( $p_size ) . '">';
