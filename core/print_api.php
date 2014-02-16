@@ -1767,7 +1767,8 @@ function print_bug_attachment_header( $p_attachment ) {
 		if ( $p_attachment['can_download'] ) {
 			echo '</a>';
 		}
-		echo lang_get( 'word_separator' ) . '(' . number_format( $p_attachment['size'] ) . lang_get( 'word_separator' ) . lang_get( 'bytes' ) . ')';
+		echo '<span class="small" title="' . get_filesize_info( $p_attachment['size']  ) . '">';
+		echo lang_get( 'word_separator' ) . '(' . get_filesize_info( $p_attachment['size'] , config_get('file_size_system') , config_get('file_size_unit') ) . ')</span>';
 		echo lang_get( 'word_separator' ) . '<span class="italic">' . date( config_get( 'normal_date_format' ), $p_attachment['date_added'] ) . '</span>';
 		event_signal('EVENT_VIEW_BUG_ATTACHMENT', array($p_attachment));
 	} else {
