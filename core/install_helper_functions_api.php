@@ -199,6 +199,7 @@ function install_category_migrate() {
 		foreach( $t_categories as $t_name => $t_user_id ) {
 			$t_lower_name = utf8_strtolower( trim( $t_name ) );
 			if( !isset( $t_inserted[$t_lower_name] ) ) {
+				db_param_push();
 				$t_query = 'INSERT INTO {category} ( name, project_id, user_id ) VALUES ( ' .
 					db_param() . ', ' . db_param() . ', ' . db_param() . ' )';
 				db_query( $t_query, array( $t_name, $t_project_id, $t_user_id ) );
@@ -208,6 +209,7 @@ function install_category_migrate() {
 				$t_category_id = $t_inserted[$t_lower_name];
 			}
 
+			db_param_push();
 			$t_query = 'UPDATE {bug} SET category_id=' . db_param() . '
 						WHERE project_id=' . db_param() . ' AND category=' . db_param();
 			db_query( $t_query, array( $t_category_id, $t_project_id, $t_name ) );
@@ -268,6 +270,7 @@ function install_date_migrate( array $p_data ) {
 	$t_result = db_query( $t_query );
 
 	if( db_num_rows( $t_result ) > 0 ) {
+		db_param_push();
 		# Build the update query
 		if( $t_date_array ) {
 			$t_pairs = array();
@@ -312,8 +315,11 @@ function install_date_migrate( array $p_data ) {
 				$t_values = array( $t_new_value, $t_id );
 			}
 
-			db_query( $t_query, $t_values );
+			# Don't pop params since we're in a loop
+			db_query( $t_query, $t_values, -1, -1, false );
 		}
+		db_param_pop();
+		
 	}
 
 	# Re-enable query logging if we disabled it
@@ -443,6 +449,7 @@ function install_stored_filter_migrate() {
 			case 'v2':
 			case 'v3':
 			case 'v4':
+				db_param_push();
 				$t_delete_query = 'DELETE FROM {filters} WHERE id=' . db_param();
 				$t_delete_result = db_query( $t_delete_query, array( $t_row['id'] ) );
 				continue;
@@ -461,6 +468,7 @@ function install_stored_filter_migrate() {
 					$t_filter_arr = json_decode( $t_setting_arr[1], /* assoc array */ true );
 			}
 		} else {
+			db_param_push();
 			$t_delete_query = 'DELETE FROM {filters} WHERE id=' . db_param();
 			$t_delete_result = db_query( $t_delete_query, array( $t_row['id'] ) );
 			continue;
@@ -500,6 +508,7 @@ function install_stored_filter_migrate() {
 		$t_filter_serialized = json_encode( $t_filter_arr );
 		$t_filter_string = FILTER_VERSION . '#' . $t_filter_serialized;
 
+		db_param_push();
 		$t_update_query = 'UPDATE {filters} SET filter_string=' . db_param() . ' WHERE id=' . db_param();
 		$t_update_result = db_query( $t_update_query, array( $t_filter_string, $t_row['id'] ) );
 	}
@@ -568,6 +577,7 @@ function install_update_history_long_custom_fields() {
 		# If field name's length is 32, then likely it was truncated so we try to match
 		if( utf8_strlen( $t_field['field_name'] ) == 32 && array_key_exists( $t_field['field_name'], $t_custom_fields ) ) {
 			# Match found, update all history records with this field name
+			db_param_push();
 			$t_update_query = 'UPDATE {bug_history}
 				SET field_name = ' . db_param() . '
 				WHERE field_name = ' . db_param();
@@ -595,6 +605,7 @@ function install_check_project_hierarchy() {
 		$t_parent_id = (int)$t_row['parent_id'];
 
 		if( $t_count > 1 ) {
+			db_param_push();
 			$t_query = 'SELECT inherit_parent, child_id, parent_id FROM {project_hierarchy} WHERE child_id=' . db_param() . ' AND parent_id=' . db_param();
 			$t_result2 = db_query( $t_query, array( $t_child_id, $t_parent_id ) );
 
@@ -603,9 +614,11 @@ function install_check_project_hierarchy() {
 
 			$t_inherit = $t_row2['inherit_parent'];
 
+			db_param_push();
 			$t_query_delete = 'DELETE FROM {project_hierarchy} WHERE child_id=' . db_param() . ' AND parent_id=' . db_param();
 			db_query( $t_query_delete, array( $t_child_id, $t_parent_id ) );
 
+			db_param_push();
 			$t_query_insert = 'INSERT INTO {project_hierarchy} (child_id, parent_id, inherit_parent) VALUES (' . db_param() . ',' . db_param() . ',' . db_param() . ')';
 			db_query( $t_query_insert, array( $t_child_id, $t_parent_id, $t_inherit ) );
 		}
@@ -636,6 +649,7 @@ function install_check_config_serialization() {
 
 		$t_json_config = json_encode( $t_config );
 
+		db_param_push();
 		$t_query = 'UPDATE {config} SET value=' .db_param() . ' WHERE config_id=' .db_param() . ' AND project_id=' .db_param() . ' AND user_id=' .db_param();
 		db_query( $t_query, array( $t_json_config, $config_id, $project_id, $user_id ) );
 	}
@@ -672,6 +686,7 @@ function install_check_token_serialization() {
 
 		$t_json_token = json_encode( $t_token );
 
+		db_param_push();
 		$t_query = 'UPDATE {tokens} SET value=' .db_param() . ' WHERE id=' .db_param();
 		db_query( $t_query, array( $t_json_token, $t_id ) );
 	}
