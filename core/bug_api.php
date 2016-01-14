@@ -408,6 +408,7 @@ class BugData {
 			$t_restriction = '';
 		}
 
+		db_param_push();
 		$t_query = 'SELECT COUNT(*) FROM {bugnote}
 					  WHERE bug_id =' . db_param() . ' ' . $t_restriction;
 		$t_result = db_query( $t_query, array( $this->id ) );
@@ -478,6 +479,7 @@ class BugData {
 		}
 
 		# Insert text information
+		db_param_push();
 		$t_query = 'INSERT INTO {bug_text}
 					    ( description, steps_to_reproduce, additional_information )
 					  VALUES
@@ -498,6 +500,7 @@ class BugData {
 		if( 0 == $this->handler_id ) {
 			# if a default user is associated with the category and we know at this point
 			# that that the bug was not assigned to somebody, then assign it automatically.
+			db_param_push();
 			$t_query = 'SELECT user_id FROM {category} WHERE id=' . db_param();
 			$t_result = db_query( $t_query, array( $this->category_id ) );
 			$t_handler = db_result( $t_result );
@@ -515,6 +518,7 @@ class BugData {
 		}
 
 		# Insert the rest of the data
+		db_param_push();
 		$t_query = 'INSERT INTO {bug}
 					    ( project_id,reporter_id, handler_id,duplicate_id,
 					      priority,severity, reproducibility,status,
@@ -532,7 +536,6 @@ class BugData {
 					      ' . db_param() . ',' . db_param() . ',' . db_param() . ',' . db_param() . ',
 					      ' . db_param() . ',' . db_param() . ',' . db_param() . ',' . db_param() . ',
 					      ' . db_param() . ',' . db_param() . ',' . db_param() . ',' . db_param() . ')';
-
 		db_query( $t_query, array( $this->project_id, $this->reporter_id, $this->handler_id, $this->duplicate_id, $this->priority, $this->severity, $this->reproducibility, $t_status, $this->resolution, $this->projection, $this->category_id, $this->date_submitted, $this->last_updated, $this->eta, $t_text_id, $this->os, $this->os_build, $this->platform, $this->version, $this->build, $this->profile_id, $this->summary, $this->view_state, $this->sponsorship_total, $this->sticky, $this->fixed_in_version, $this->target_version, $this->due_date ) );
 
 		$this->id = db_insert_id( db_get_table( 'bug' ) );
@@ -572,6 +575,7 @@ class BugData {
 		#  as unix timestamps which could confuse the history log and they
 		#  shouldn't get updated like this anyway.  If you really need to change
 		#  them use bug_set_field()
+		db_param_push();
 		$t_query = 'UPDATE {bug}
 					SET project_id=' . db_param() . ', reporter_id=' . db_param() . ',
 						handler_id=' . db_param() . ', duplicate_id=' . db_param() . ',
@@ -652,6 +656,7 @@ class BugData {
 		if( $p_update_extended ) {
 			$t_bug_text_id = bug_get_field( $c_bug_id, 'bug_text_id' );
 
+			db_param_push();
 			$t_query = 'UPDATE {bug_text}
 							SET description=' . db_param() . ',
 								steps_to_reproduce=' . db_param() . ',
@@ -752,6 +757,7 @@ function bug_cache_row( $p_bug_id, $p_trigger_errors = true ) {
 
 	$c_bug_id = (int)$p_bug_id;
 
+	db_param_push();
 	$t_query = 'SELECT * FROM {bug} WHERE id=' . db_param();
 	$t_result = db_query( $t_query, array( $c_bug_id ) );
 
@@ -855,6 +861,7 @@ function bug_text_cache_row( $p_bug_id, $p_trigger_errors = true ) {
 		return $g_cache_bug_text[$c_bug_id];
 	}
 
+	db_param_push();
 	$t_query = 'SELECT bt.* FROM {bug_text} bt, {bug} b
 				  WHERE b.id=' . db_param() . ' AND b.bug_text_id = bt.id';
 	$t_result = db_query( $t_query, array( $c_bug_id ) );
@@ -1104,6 +1111,7 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
 
 	# COPY CUSTOM FIELDS
 	if( $p_copy_custom_fields ) {
+		db_param_push();
 		$t_query = 'SELECT field_id, bug_id, value, text FROM {custom_field_string} WHERE bug_id=' . db_param();
 		$t_result = db_query( $t_query, array( $t_bug_id ) );
 
@@ -1113,6 +1121,7 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
 			$c_value = $t_bug_custom['value'];
 			$c_text = $t_bug_custom['text'];
 
+			db_param_push();
 			$t_query = 'INSERT INTO {custom_field_string}
 						   ( field_id, bug_id, value, text )
 						   VALUES (' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ')';
@@ -1127,17 +1136,20 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
 
 	# Copy bugnotes
 	if( $p_copy_bugnotes ) {
+		db_param_push();
 		$t_query = 'SELECT * FROM {bugnote} WHERE bug_id=' . db_param();
 		$t_result = db_query( $t_query, array( $t_bug_id ) );
 
 		while( $t_bug_note = db_fetch_array( $t_result ) ) {
 			$t_bugnote_text_id = $t_bug_note['bugnote_text_id'];
 
+			db_param_push();
 			$t_query2 = 'SELECT * FROM {bugnote_text} WHERE id=' . db_param();
 			$t_result2 = db_query( $t_query2, array( $t_bugnote_text_id ) );
 
 			$t_bugnote_text_insert_id = -1;
 			if( $t_bugnote_text = db_fetch_array( $t_result2 ) ) {
+				db_param_push();
 				$t_query2 = 'INSERT INTO {bugnote_text}
 							   ( note )
 							   VALUES ( ' . db_param() . ' )';
@@ -1145,6 +1157,7 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
 				$t_bugnote_text_insert_id = db_insert_id( db_get_table( 'bugnote_text' ) );
 			}
 
+			db_param_push();
 			$t_query2 = 'INSERT INTO {bugnote}
 						   ( bug_id, reporter_id, bugnote_text_id, view_state, date_submitted, last_modified )
 						   VALUES ( ' . db_param() . ',
@@ -1172,10 +1185,12 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
 	if( $p_copy_history ) {
 		# @todo problem with this code: the generated history trail is incorrect because the note IDs are those of the original bug, not the copied ones
 		# @todo actually, does it even make sense to copy the history ?
+		db_param_push();
 		$t_query = 'SELECT * FROM {bug_history} WHERE bug_id = ' . db_param();
 		$t_result = db_query( $t_query, array( $t_bug_id ) );
 
 		while( $t_bug_history = db_fetch_array( $t_result ) ) {
+			db_param_push();
 			$t_query = 'INSERT INTO {bug_history}
 						  ( user_id, bug_id, date_modified, field_name, old_value, new_value, type )
 						  VALUES ( ' . db_param() . ',' . db_param() . ',' . db_param() . ',
@@ -1294,10 +1309,12 @@ function bug_delete( $p_bug_id ) {
 	# Delete the bugnote text
 	$t_bug_text_id = bug_get_field( $p_bug_id, 'bug_text_id' );
 
+	db_param_push();
 	$t_query = 'DELETE FROM {bug_text} WHERE id=' . db_param();
 	db_query( $t_query, array( $t_bug_text_id ) );
 
 	# Delete the bug entry
+	db_param_push();
 	$t_query = 'DELETE FROM {bug} WHERE id=' . db_param();
 	db_query( $t_query, array( $c_bug_id ) );
 
@@ -1315,6 +1332,7 @@ function bug_delete( $p_bug_id ) {
 function bug_delete_all( $p_project_id ) {
 	$c_project_id = (int)$p_project_id;
 
+	db_param_push();
 	$t_query = 'SELECT id FROM {bug} WHERE project_id=' . db_param();
 	$t_result = db_query( $t_query, array( $c_project_id ) );
 
@@ -1449,6 +1467,7 @@ function bug_format_summary( $p_bug_id, $p_context ) {
 function bug_get_newest_bugnote_timestamp( $p_bug_id ) {
 	$c_bug_id = (int)$p_bug_id;
 
+	db_param_push();
 	$t_query = 'SELECT last_modified FROM {bugnote} WHERE bug_id=' . db_param() . ' ORDER BY last_modified DESC';
 	$t_result = db_query( $t_query, array( $c_bug_id ), 1 );
 	$t_row = db_result( $t_result );
@@ -1478,6 +1497,7 @@ function bug_get_bugnote_stats( $p_bug_id ) {
 	}
 
 	# @todo - optimise - max(), count()
+	db_param_push();
 	$t_query = 'SELECT last_modified FROM {bugnote} WHERE bug_id=' . db_param() . ' ORDER BY last_modified ASC';
 	$t_result = db_query( $t_query, array( $c_bug_id ) );
 
@@ -1507,6 +1527,7 @@ function bug_get_bugnote_stats( $p_bug_id ) {
  * @uses file_api.php
  */
 function bug_get_attachments( $p_bug_id ) {
+	db_param_push();
 	$t_query = 'SELECT id, title, diskfile, filename, filesize, file_type, date_added, user_id
 		                FROM {bug_file}
 		                WHERE bug_id=' . db_param() . '
@@ -1596,6 +1617,7 @@ function bug_set_field( $p_bug_id, $p_field_name, $p_value ) {
 	}
 
 	# Update fields
+	db_param_push();
 	$t_query = 'UPDATE {bug} SET ' . $p_field_name . '=' . db_param() . ' WHERE id=' . db_param();
 	db_query( $t_query, array( $c_value, $c_bug_id ) );
 
@@ -1651,6 +1673,7 @@ function bug_assign( $p_bug_id, $p_user_id, $p_bugnote_text = '', $p_bugnote_pri
 	if( ( $t_ass_val != $h_status ) || ( $p_user_id != $h_handler_id ) ) {
 
 		# get user id
+		db_param_push();
 		$t_query = 'UPDATE {bug}
 					  SET handler_id=' . db_param() . ', status=' . db_param() . '
 					  WHERE id=' . db_param();
@@ -1823,6 +1846,7 @@ function bug_reopen( $p_bug_id, $p_bugnote_text = '', $p_time_tracking = '0:00',
  * @uses database_api.php
  */
 function bug_update_date( $p_bug_id ) {
+	db_param_push();
 	$t_query = 'UPDATE {bug} SET last_updated=' . db_param() . ' WHERE id=' . db_param();
 	db_query( $t_query, array( db_now(), $p_bug_id ) );
 
@@ -1856,6 +1880,7 @@ function bug_monitor( $p_bug_id, $p_user_id ) {
 	}
 
 	# Insert monitoring record
+	db_param_push();
 	$t_query = 'INSERT INTO {bug_monitor} ( user_id, bug_id ) VALUES (' . db_param() . ',' . db_param() . ')';
 	db_query( $t_query, array( $c_user_id, $c_bug_id ) );
 
@@ -1882,6 +1907,7 @@ function bug_get_monitors( $p_bug_id ) {
 	}
 
 	# get the bugnote data
+	db_param_push();
 	$t_query = 'SELECT user_id, enabled
 			FROM {bug_monitor} m, {user} u
 			WHERE m.bug_id=' . db_param() . ' AND m.user_id = u.id
@@ -1912,12 +1938,14 @@ function bug_monitor_copy( $p_source_bug_id, $p_dest_bug_id ) {
 	$c_source_bug_id = (int)$p_source_bug_id;
 	$c_dest_bug_id = (int)$p_dest_bug_id;
 
+	db_param_push();
 	$t_query = 'SELECT user_id FROM {bug_monitor} WHERE bug_id = ' . db_param();
 	$t_result = db_query( $t_query, array( $c_source_bug_id ) );
 
 	while( $t_bug_monitor = db_fetch_array( $t_result ) ) {
 		if( user_exists( $t_bug_monitor['user_id'] ) &&
 			!user_is_monitoring_bug( $t_bug_monitor['user_id'], $c_dest_bug_id ) ) {
+			db_param_push();
 			$t_query = 'INSERT INTO {bug_monitor} ( user_id, bug_id )
 				VALUES ( ' . db_param() . ', ' . db_param() . ' )';
 			db_query( $t_query, array( $t_bug_monitor['user_id'], $c_dest_bug_id ) );
@@ -1938,6 +1966,7 @@ function bug_monitor_copy( $p_source_bug_id, $p_dest_bug_id ) {
  */
 function bug_unmonitor( $p_bug_id, $p_user_id ) {
 	# Delete monitoring record
+	db_param_push();
 	$t_query = 'DELETE FROM {bug_monitor} WHERE bug_id = ' . db_param();
 	$t_db_query_params[] = $p_bug_id;
 
