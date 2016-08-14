@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+	Default settings for PHP_CodeSniffer
+
+	This allows running phpcs / phpcbf on the whole MantisBT codebase,
+	without having to specify command-line options.
+-->
+
+<ruleset name="Mantis">
+	<description>The coding standard for MantisBT.</description>
+
+	<!-- show report in color, with progress -->
+	<arg name="report-width" value="auto"/>
+	<arg name="colors"/>
+	<arg value="p"/>
+	<arg name="encoding" value="utf-8"/>
+
+	<!-- MantisBT rules -->
+	<rule ref="./build/CodeSniffer/Mantis"></rule>
+
+</ruleset>
