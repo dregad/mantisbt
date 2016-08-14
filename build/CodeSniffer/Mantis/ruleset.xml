@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Mantis">
+	<description>The coding standard for MantisBT.</description>
+
+	<!-- Exclude third party code -->
+	<exclude-pattern>*/.git/*</exclude-pattern>
+	<exclude-pattern>*/config/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/library/*</exclude-pattern>
+<!--
+	<exclude-pattern>*/css/*</exclude-pattern>
+	<exclude-pattern>*/javascript/*</exclude-pattern>
+	<exclude-pattern>config_defaults_inc.php</exclude-pattern>
+-->
+	<exclude-pattern>*/tests/bootstrap.php</exclude-pattern>
+<!--
+	<exclude-pattern>*/tests/*</exclude-pattern>
+-->
+
+	<rule ref="Generic.PHP.DisallowShortOpenTag"/>
+	<rule ref="PSR2.Files.ClosingTag"/>
+
+	<rule ref="Generic.PHP.DeprecatedFunctions"/>
+	<!-- PHP keywords MUST be in lower case. -->
+	<rule ref="Generic.PHP.LowerCaseKeyword"/>
+	<!-- PHP constants true, false, and null MUST be in lower case. -->
+	<rule ref="Generic.PHP.LowerCaseConstant"/>
+
+	<!-- Control structures:
+		- inline not allowed
+	-->
+	<rule ref="Generic.ControlStructures.InlineControlStructure"/>
+	<rule ref="PSR2.ControlStructures.ControlStructureSpacing">
+		<properties>
+			<property name="requiredSpacesAfterOpen" value="1"/>
+			<property name="requiredSpacesBeforeClose" value="1"/>
+		</properties>
+	</rule>
+
+	<!-- Strings -->
+	<rule ref="Squiz.Strings.DoubleQuoteUsage"/>
+	<rule ref="Squiz.Strings.ConcatenationSpacing">
+		<properties>
+			<property name="spacing" value="1"/>
+			<property name="ignoreNewlines" value="true"/>
+		</properties>
+	</rule>
+
+	<!-- Function declarations -->
+	<rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
+	<rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">
+		<properties>
+			<property name="equalsSpacing" value="1"/>
+			<property name="requiredSpacesAfterOpen" value="1"/>
+			<property name="requiredSpacesBeforeClose" value="1"/>
+		</properties>
+	</rule>
+	<rule ref="Squiz.WhiteSpace.FunctionOpeningBraceSpace"/>
+
+	<!-- Whitespace -->
+	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
+	<rule ref="Generic.Formatting.NoSpaceAfterCast"/>
+	<rule ref="Generic.Files.LineEndings">
+		<!-- Use Unix new lines -->
+		<properties>
+			<property name="eolChar" value="\n"/>
+		</properties>
+	</rule>
+	<rule ref="PSR2.Files.EndFileNewline"/>
+	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+	<rule ref="Squiz.WhiteSpace.ScopeClosingBrace"/>
+
+	<!-- Comments -->
+	<rule ref="Squiz.Commenting.FileComment">
+		<exclude name="Squiz.Commenting.FileComment.IncorrectAuthor"/>
+		<exclude name="Squiz.Commenting.FileComment.IncorrectCopyright"/>
+	</rule>
+	<rule ref="Squiz.Commenting.FunctionComment">
+		<!-- On PHP 7, this Sniff throws errors for missing type hints, but
+			 since we need to support older PHP versions we disable it
+			 @TODO the Sniff should throw a warning instead
+		-->
+		<exclude name="Squiz.Commenting.FunctionComment.TypeHintMissing"/>
+	</rule>
+	<rule ref="Squiz.Commenting.ClassComment">
+		<!-- This sniff throws warnings for each DocBlock tag in the class comment.
+		     Since our guidelines don't specify what tags to use, we disable it
+		-->
+		<exclude name="Squiz.Commenting.ClassComment.TagNotAllowed"/>
+	</rule>
+	<rule ref="Squiz.Commenting.BlockComment"/>
+
+	<!-- Function calls:
+		- 1 space after '(', 1 space before ')'
+		- only one argument per line in multi-line function calls
+	-->
+	<rule ref="PEAR.Functions.FunctionCallSignature">
+		<properties>
+			<property name="allowMultipleArguments" value="false"/>
+			<property name="requiredSpacesAfterOpen" value="1"/>
+			<property name="requiredSpacesBeforeClose" value="1"/>
+		</properties>
+	</rule>
+	<rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
+
+	<!-- Arrays -->
+	<rule ref="Generic.Arrays.DisallowShortArraySyntax"/>
+	<rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
+	<rule ref="Mantis.Arrays.ArrayDeclaration">
+		<exclude name="Mantis.Arrays.ArrayDeclaration.SingleLineNotAllowed"/>
+		<exclude name="Mantis.Arrays.ArrayDeclaration.KeyNotAligned"/>
+		<exclude name="Mantis.Arrays.ArrayDeclaration.ValueNotAligned"/>
+		<exclude name="Mantis.Arrays.ArrayDeclaration.CloseBraceNotAligned"/>
+	</rule>
+
+	<!-- Naming conventions -->
+	<rule ref="Squiz.Classes.ValidClassName"/>
+
+</ruleset>
