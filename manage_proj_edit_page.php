@@ -226,10 +226,10 @@ if( access_has_global_level ( config_get( 'delete_project_threshold' ) ) ) { ?>
 <?php } ?>
 </div>
 
+<!-- CREATE/ADD SUBPROJECTS -->
 <?php
 if ( config_get( 'subprojects_enabled') == ON ) {
 ?>
-<!-- SUBPROJECTS -->
 <div class="col-md-12 col-xs-12">
 	<div class="space-10"></div>
 	<div id="manage-project-update-subprojects-div" class="form-container">
@@ -279,10 +279,12 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 	</div>
 </div>
 
+<!-- SUBPROJECTS -->
 <?php
 	$t_subproject_ids = current_user_get_accessible_subprojects( $f_project_id, true );
-	if( array() != $t_subproject_ids ) { ?>
-	<div class="col-md-12 col-xs-12">
+	if( array() != $t_subproject_ids ) {
+?>
+<div class="col-md-12 col-xs-12">
 	<div class="space-10"></div>
 	<form id="manage-project-update-subprojects-form" action="manage_proj_update_children.php" method="post">
 	<div class="widget-box widget-color-blue2">
@@ -379,6 +381,7 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 	} # are sub-projects enabled?
 ?>
 
+<!-- CATEGORIES -->
 <div class="col-md-12 col-xs-12">
 	<div class="space-10"></div>
 	<div id="categories" class="form-container">
@@ -468,7 +471,7 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 </div>
 </div>
 
-
+<!-- VERSIONS -->
 <div class="col-md-12 col-xs-12">
 <div class="space-10"></div>
 <div id="project-versions-div" class="form-container">
@@ -569,6 +572,7 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 </div>
 </div>
 
+<!-- CUSTOM FIELDS -->
 <?php
 # You need either global permissions or project-specific permissions to link
 #  custom fields
@@ -699,6 +703,7 @@ event_signal( 'EVENT_MANAGE_PROJECT_PAGE', array( $f_project_id ) );
 	</div>
 </div>
 
+<!-- MANAGE ACCOUNTS -->
 <div class="col-md-12 col-xs-12">
 	<div class="space-10"></div>
 	<div id="manage-project-users-div" class="form-container">
@@ -889,6 +894,7 @@ event_signal( 'EVENT_MANAGE_PROJECT_PAGE', array( $f_project_id ) );
 	</div>
 </div>
 
+<!-- ADD USER TO PROJECT -->
 <?php
 # We want to allow people with global permissions and people with high enough
 #  permissions on the project we are editing
