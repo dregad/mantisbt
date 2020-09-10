@@ -448,7 +448,7 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 					'manage_proj_cat_edit_page.php',
 					lang_get( 'edit' ),
 					array(
-						'id' => $t_id,
+						'category_id' => $t_id,
 						'project_id' => $f_project_id,
 					),
 					OFF,
@@ -459,7 +459,7 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 					'manage_proj_cat_delete.php',
 					lang_get( 'delete' ),
 					array(
-						'id' => $t_id,
+						'category_id' => $t_id,
 						'project_id' => $f_project_id,
 					),
 					$t_security_token,
@@ -484,8 +484,13 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 			<?php echo form_security_field( 'manage_proj_cat_add' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<input type="text" name="name" size="32" maxlength="128" class="input-sm" />
-			<input type="submit" class="btn btn-sm btn-primary btn-white btn-round" value="<?php echo lang_get( 'add_category_button' ) ?>" />
-			<input type="submit" name="add_and_edit_category" class="btn btn-sm btn-primary btn-white btn-round" value="<?php echo lang_get( 'add_and_edit_category_button' ) ?>" />
+			<button class="btn btn-sm btn-primary btn-white btn-round">
+				<?php echo lang_get( 'add_category_button' ) ?>
+			</button>
+			<button name="add_and_edit_category" value="1"
+					class="btn btn-sm btn-primary btn-white btn-round">
+				<?php echo lang_get( 'add_and_edit_category_button' ) ?>
+			</button>
 		</fieldset>
 	</form>
 </div>
