@@ -87,7 +87,6 @@ $t_can_manage_users = access_has_project_level( config_get( 'project_user_thresh
 require_js( 'manage_proj_edit_page.js' );
 
 layout_page_header( project_get_field( $f_project_id, 'name' ) );
-
 layout_page_begin( 'manage_overview_page.php' );
 
 print_manage_menu( 'manage_proj_edit_page.php' );
@@ -244,8 +243,13 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 		<?php
 		# Check the user's global access level before allowing project creation
 		if( access_has_global_level ( config_get( 'create_project_threshold' ) ) ) {
-			print_form_button( 'manage_proj_create_page.php?parent_id=' . $f_project_id, lang_get( 'create_new_subproject_link' ),
-				null, null, 'btn btn-sm btn-primary btn-white btn-round' );
+			print_form_button(
+				'manage_proj_create_page.php',
+				lang_get( 'create_new_subproject_link' ),
+				array( 'parent_id' => $f_project_id ),
+				null,
+				'btn btn-sm btn-primary btn-white btn-round'
+			);
 		} ?>
 	</div>
 		<form id="manage-project-subproject-add-form" method="post" action="manage_proj_subproj_add.php" class="form-inline">
@@ -422,6 +426,7 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 		</thead>
 		<tbody>
 <?php
+		$t_security_token = form_security_token( 'manage_proj_cat_delete' );
 		foreach ( $t_categories as $t_category ) {
 			$t_id = $t_category['id'];
 			$t_inherited = ( $t_category['project_id'] != $f_project_id );
@@ -431,20 +436,31 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 				<td><?php echo prepare_user_name( $t_category['user_id'] ) ?></td>
 				<td class="center">
 					<div class="inline">
-					<?php if( !$t_inherited ) {
-						$t_id = urlencode( $t_id );
-						$t_project_id = urlencode( $f_project_id );
-						echo '<div class="pull-left">';
-						print_form_button( 'manage_proj_cat_edit_page.php?id=' . $t_id . '&project_id=' . $t_project_id, lang_get( 'edit' ),
-							null, null, 'btn btn-xs btn-primary btn-white btn-round' );
-						echo '</div>';
-					} ?>
-					<?php if( !$t_inherited ) {
-						echo '<div class="pull-left">';
-						print_form_button( 'manage_proj_cat_delete.php?id=' . $t_id . '&project_id=' . $t_project_id, lang_get( 'delete' ),
-							null, null, 'btn btn-xs btn-primary btn-white btn-round' );
-						echo '</div>';
-					} ?>
+<?php
+			if( !$t_inherited ) {
+				print_form_button(
+					'manage_proj_cat_edit_page.php',
+					lang_get( 'edit' ),
+					array(
+						'id' => $t_id,
+						'project_id' => $f_project_id,
+					),
+					OFF,
+					'btn btn-xs btn-primary btn-white btn-round'
+				);
+
+				print_form_button(
+					'manage_proj_cat_delete.php',
+					lang_get( 'delete' ),
+					array(
+						'id' => $t_id,
+						'project_id' => $f_project_id,
+					),
+					$t_security_token,
+					'btn btn-xs btn-primary btn-white btn-round'
+				);
+			}
+?>
 					</div>
 				</td>
 			</tr>
@@ -514,6 +530,7 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 		</thead>
 		<tbody>
 <?php
+		$t_security_token = form_security_token( 'manage_proj_ver_delete' );
 		foreach ( $t_versions as $t_version ) {
 			$t_inherited = $t_version['project_id'] != $f_project_id;
 			$t_name = version_full_name( $t_version['id'], $t_inherited, $f_project_id );
@@ -535,13 +552,18 @@ if ( config_get( 'subprojects_enabled') == ON ) {
 					<?php
 					$t_version_id = version_get_id( $t_name, $f_project_id );
 					if( !$t_inherited ) {
-						echo '<div class="pull-left">';
-						print_form_button( 'manage_proj_ver_edit_page.php?version_id=' . $t_version_id, lang_get( 'edit' ) );
-						echo '</div>';
-
-						echo '<div class="pull-left">';
-						print_form_button( 'manage_proj_ver_delete.php?version_id=' . $t_version_id, lang_get( 'delete' ) );
-						echo '</div>';
+						print_form_button(
+							'manage_proj_ver_edit_page.php',
+							lang_get( 'edit' ),
+							array( 'version_id' => $t_version_id),
+							OFF
+						);
+						print_form_button(
+							'manage_proj_ver_delete.php',
+							lang_get( 'delete' ),
+							array( 'version_id' => $t_version_id),
+							$t_security_token
+						);
 					} ?>
 					</div>
 				</td>
@@ -637,9 +659,15 @@ if( access_has_project_level( config_get( 'custom_field_link_threshold' ), $f_pr
 						</fieldset>
 					</form>
 				</td>
-				<td class="center"><?php
+				<td class="center">
+<?php
 					# You need global permissions to edit custom field defs
-					print_form_button( "manage_proj_custom_field_remove.php?field_id=$t_field_id&project_id=$f_project_id", lang_get( 'remove_link' ) ); ?>
+					print_form_button(
+						'manage_proj_custom_field_remove.php',
+						lang_get( 'remove_link' ),
+						array( 'field_id' => $t_field_id, 'project_id' => $f_project_id )
+					);
+?>
 				</td>
 			</tr>
 <?php
@@ -878,17 +906,20 @@ event_signal( 'EVENT_MANAGE_PROJECT_PAGE', array( $f_project_id ) );
 	?>
 			</div>
 			<div class="widget-toolbox padding-8 clearfix">
-	<?php
+<?php
 	# You need global or project-specific permissions to remove users
-	#  from this project
-	if( !$f_show_global_users ) {
-		print_form_button( "manage_proj_edit_page.php?project_id=$f_project_id&show_global_users=true", lang_get( 'show_global_users' ),
-			null, OFF, 'btn btn-sm btn-primary btn-white btn-round' );
-	} else {
-		print_form_button( "manage_proj_edit_page.php?project_id=$f_project_id", lang_get( 'hide_global_users' ),
-			null, OFF, 'btn btn-sm btn-primary btn-white btn-round' );
-	}
-	?>
+	# from this project
+	print_form_button(
+		'manage_proj_edit_page.php',
+		lang_get( $f_show_global_users ? 'hide_global_users' : 'show_global_users' ),
+		array(
+			'project_id' => $f_project_id,
+			'show_global_users' => !$f_show_global_users
+		),
+		OFF,
+		'btn btn-sm btn-primary btn-white btn-round'
+	);
+?>
 			</div>
 		</div>
 	</div>
