@@ -1,0 +1,2732 @@
+# MantisBT REST API definition
+# Copyright 2021 MantisBT Team - mantisbt-dev@lists.sourceforge.net
+
+openapi: 3.0.3
+
+info:
+  title: MantisBT REST API
+  version: 1.1.0
+  description: |-
+    # Mantis Bug Tracker REST API
+
+    REST API calls have to be authenticated by creating an API token for the user doing the calls, and then passing the API token in the 'Authorization' header.  However, for anonymous access, the API key and header are not needed.
+
+    Postman Environment Variables:
+    - {{token}} - The API token to be used for authentication.
+    - {{url}} - The base URL for Mantis instance (e.g. 'https://instance-name.mantishub.io').
+
+    There has been significant improvements and feature additions for REST API in each of the recent releases.  Hence, it is highly recommended to use latest release when leveraging the REST APIs.
+
+    REST API is enabled by default since MantisBT 2.8.0 release.
+  contact:
+    name: MantisBT Team
+    email: mantisbt-dev@lists.sourceforge.net
+    url: https://mantisbt.org
+  license:
+    name: GNU General Public License version 2 or any later version
+    url: https://opensource.org/licenses/GPL-2.0
+
+servers:
+  - url: '{protocol}://{hostname}:{port}/{basePath}api/rest'
+    description: Your MantisBT instance
+    variables:
+      protocol:
+        enum:
+          - http
+          - https
+        default: https
+      hostname:
+        description: The server where MantisBT is installed, including port number if not standard.
+        default: localhost
+      port:
+        default: ''
+      basePath:
+        description: The path where MantisBT is installed, including trailing `/`
+        default: mantisbt/
+  - url: 'https://mantisbt.org/bugs/api/rest'
+    description: MantisBT's own bugtracker
+
+security:
+  - MantisApiToken: []
+
+paths:
+  '/issues/{issue_id}':
+    get:
+      summary: Get an issue
+      description: |-
+        Get issue with the specified id.
+
+        Available since MantisBT 2.3.0.  Issue history included since MantisBT 2.9.0.
+      operationId: Getanissue
+      parameters:
+        - $ref: '#/components/parameters/issue_id'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                issues:
+                  - id: 1
+                    summary: Sample issue title
+                    description: Sample issue description
+                    project:
+                      id: 1
+                      name: mantisbt
+                    category:
+                      id: 135
+                      name: General
+                    reporter:
+                      id: 1
+                      name: vboctor
+                      real_name: Victor Boctor
+                      email: vboctor@example.com
+                    status:
+                      id: 10
+                      name: new
+                      label: new
+                      color: '#fcbdbd'
+                    resolution:
+                      id: 10
+                      name: open
+                      label: open
+                    view_state:
+                      id: 10
+                      name: public
+                      label: public
+                    priority:
+                      id: 30
+                      name: normal
+                      label: normal
+                    severity:
+                      id: 50
+                      name: minor
+                      label: minor
+                    reproducibility:
+                      id: 70
+                      name: have not tried
+                      label: have not tried
+                    sticky: false
+                    created_at: '2017-04-23T13:12:28-04:00'
+                    updated_at: '2017-04-23T13:12:28-04:00'
+                    custom_fields:
+                      - field:
+                          id: 4
+                          name: The City
+                        value: Seattle
+                    history:
+                      - created_at: '2017-04-23T13:12:28-04:00'
+                        user:
+                          id: 36771
+                          name: vboctor
+                          real_name: Victor Boctor
+                          email: vboctor@example.com
+                        type:
+                          id: 1
+                          name: issue-new
+                        message: New Issue
+        '404':
+          description: Not Found
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/404'
+              example:
+                message: 'Issue #200000 not found'
+                code: 1100
+                localized: Issue 200000 not found.
+      tags:
+        - Issues
+    patch:
+      summary: Update an issue (minimal)
+      description: |-
+        Update an exiting issue.
+
+        Available since MantisBT 2.8.0.
+      operationId: Updateanissue(minimal)
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '403':
+          description: Update an issue (access denied)
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/403'
+              example:
+                message: 'Access denied for user GermanReporter. Reason: Not enough rights to update issues.'
+      requestBody:
+        description: |-
+          Update an exiting issue.
+
+          Available since MantisBT 2.8.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                handler:
+                  name: vboctor
+                status:
+                  name: assigned
+            example: |-
+              {
+                "handler": {
+                  "name": "vboctor"
+                },
+                "status": {
+                  "name": "assigned"
+                }
+              }
+      tags:
+        - Issues
+    delete:
+      summary: Delete an issue
+      description: |-
+        Deletes an issue given its id.
+
+        Available since MantisBT 2.3.0.
+      operationId: Deleteanissue
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '204':
+          description: Delete an issue (success)
+          content:
+            '':
+              schema: {}
+        '404':
+          description: Delete an issue (not found)
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/404'
+              example:
+                message: 'Issue #1234 not found'
+                code: 1100
+                localized: Issue 1234 not found.
+      tags:
+        - Issues
+  '/issues/{issue_id}/files':
+    get:
+      summary: Get issue files
+      description: |-
+        Get all files associated with an issue.
+
+        Available since MantisBT 2.11.0.
+      operationId: Getissuefiles
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id to get files for
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                issues:
+                  - id: 1
+                    summary: Sample issue title
+                    description: Sample issue description
+                    project:
+                      id: 1
+                      name: mantisbt
+                    category:
+                      id: 135
+                      name: General
+                    reporter:
+                      id: 1
+                      name: vboctor
+                      real_name: Victor Boctor
+                      email: vboctor@example.com
+                    status:
+                      id: 10
+                      name: new
+                      label: new
+                      color: '#fcbdbd'
+                    resolution:
+                      id: 10
+                      name: open
+                      label: open
+                    view_state:
+                      id: 10
+                      name: public
+                      label: public
+                    priority:
+                      id: 30
+                      name: normal
+                      label: normal
+                    severity:
+                      id: 50
+                      name: minor
+                      label: minor
+                    reproducibility:
+                      id: 70
+                      name: have not tried
+                      label: have not tried
+                    sticky: false
+                    created_at: '2017-04-23T13:12:28-04:00'
+                    updated_at: '2017-04-23T13:12:28-04:00'
+                    custom_fields:
+                      - field:
+                          id: 4
+                          name: The City
+                        value: Seattle
+                    history:
+                      - created_at: '2017-04-23T13:12:28-04:00'
+                        user:
+                          id: 36771
+                          name: vboctor
+                          real_name: Victor Boctor
+                          email: vboctor@example.com
+                        type:
+                          id: 1
+                          name: issue-new
+                        message: New Issue
+        '404':
+          description: Not Found
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/404'
+              example:
+                message: 'Issue #200000 not found'
+                code: 1100
+                localized: Issue 200000 not found.
+      tags:
+        - Issues
+    post:
+      summary: Add attachments to issue
+      description: |-
+        Add attachments to an existing issue.
+
+        Available since MantisBT 2.11.0.
+      operationId: Addattachmentstoissue
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        description: |-
+          Add attachments to an existing issue.
+
+          Available since MantisBT 2.11.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                files:
+                  - name: test.txt
+                    content: VGhpcyBpcyBhIFRFU1QuDQpUaGlzIGlzIGEgVEVTVC4NClRoaXMgaXMgYSBURVNULg0KVGhpcyBpcyBhIFRFU1QuDQpUaGlzIGlzIGEgVEVTVC4=
+            example: |-
+              {
+                "files": [
+                  {
+                    "name": "test.txt",
+                    "content": "VGhpcyBpcyBhIFRFU1QuDQpUaGlzIGlzIGEgVEVTVC4NClRoaXMgaXMgYSBURVNULg0KVGhpcyBpcyBhIFRFU1QuDQpUaGlzIGlzIGEgVEVTVC4="
+                  }
+                ]
+              }
+      tags:
+        - Issues
+  '/issues/{issue_id}/files/{file_id}':
+    get:
+      summary: Get issue file (single)
+      description: |-
+        Get a single file from an issue.
+
+        Available since MantisBT 2.11.0.
+      operationId: Getissuefile(single)
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id
+        - $ref: '#/components/parameters/file_id'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      tags:
+        - Issues
+  /issues:
+    get:
+      summary: Get all issues
+      description: |-
+        Get paginated list of issues.
+
+        Available since MantisBT 2.3.0.  Issue history included since MantisBT 2.9.0.  A fix was implemented in 2.20.0 to avoid filtering out of some issues (e.g. closed issues).
+      operationId: Getallissues
+      parameters:
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      tags:
+        - Issues
+    post:
+      summary: Create an issue
+      description: |-
+        Create an issue with most fields supplied.
+
+        Available since MantisBT 2.3.0.
+      operationId: Createanissue
+      parameters:
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '201':
+          description: success
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/201'
+              example:
+                issue:
+                  id: 1
+                  summary: Sample REST issue
+                  description: Description for sample REST issue.
+                  additional_information: More info about the issue
+                  project:
+                    id: 1
+                    name: mantisbt
+                  category:
+                    id: 5
+                    name: bugtracker
+                  reporter:
+                    id: 2
+                    name: GermanReporter
+                  handler:
+                    id: 1
+                    name: vboctor
+                  status:
+                    id: 50
+                    name: assigned
+                    label: zugewiesen
+                    color: '#c2dfff'
+                  resolution:
+                    id: 10
+                    name: open
+                    label: offen
+                  view_state:
+                    id: 10
+                    name: public
+                    label: öffentlich
+                  priority:
+                    id: 30
+                    name: normal
+                    label: normal
+                  severity:
+                    id: 20
+                    name: trivial
+                    label: Trivial
+                  reproducibility:
+                    id: 10
+                    name: always
+                    label: immer
+                  sticky: false
+                  created_at: '2018-01-07T18:47:35-05:00'
+                  updated_at: '2018-01-07T18:47:35-05:00'
+                  custom_fields:
+                    - field:
+                        id: 4
+                        name: The City
+                      value: Seattle
+                  tags:
+                    - id: '1'
+                      name: mantishub
+                  history:
+                    - created_at: '2018-01-07T18:47:35-05:00'
+                      user:
+                        id: 2
+                        name: GermanReporter
+                        email: german-reporter@example.com
+                      type:
+                        id: 1
+                        name: issue-new
+                      message: Neuer Eintrag
+                    - created_at: '2018-01-07T18:47:35-05:00'
+                      user:
+                        id: 2
+                        name: GermanReporter
+                        email: german-reporter@example.com
+                      field:
+                        name: status
+                        label: Status
+                      type:
+                        id: 0
+                        name: field-updated
+                      old_value:
+                        id: 10
+                        name: new
+                        label: neu
+                        color: '#fcbdbd'
+                      new_value:
+                        id: 50
+                        name: assigned
+                        label: zugewiesen
+                        color: '#c2dfff'
+                      message: Status
+                      change: neu => zugewiesen
+                    - created_at: '2018-01-07T18:47:35-05:00'
+                      user:
+                        id: 2
+                        name: GermanReporter
+                        email: german-reporter@example.com
+                      field:
+                        name: handler
+                        label: Bearbeitung durch
+                      type:
+                        id: 0
+                        name: field-updated
+                      old_value:
+                        id: 0
+                      new_value:
+                        id: 1
+                        name: vboctor
+                      message: Bearbeitung durch
+                      change: ' => vboctor'
+                    - created_at: '2018-01-07T18:47:35-05:00'
+                      user:
+                        id: 2
+                        name: GermanReporter
+                        email: german-reporter@example.com
+                      type:
+                        id: 25
+                        name: tag-added
+                      tag:
+                        id: '1'
+                        name: mantishub
+                      message: 'Tag zugeordnet: mantishub'
+      requestBody:
+        description: |-
+          Create an issue with most fields supplied.
+
+          Available since MantisBT 2.3.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                summary: Sample REST issue
+                description: Description for sample REST issue.
+                additional_information: More info about the issue
+                project:
+                  id: 1
+                  name: mantisbt
+                category:
+                  id: 5
+                  name: bugtracker
+                handler:
+                  name: vboctor
+                view_state:
+                  id: 10
+                  name: public
+                priority:
+                  name: normal
+                severity:
+                  name: trivial
+                reproducibility:
+                  name: always
+                sticky: false
+                custom_fields:
+                  - field:
+                      id: 4
+                      name: The City
+                    value: Seattle
+                tags:
+                  - name: mantishub
+            example: |
+              {
+                  "summary": "Sample REST issue",
+                  "description": "Description for sample REST issue.",
+                  "additional_information": "More info about the issue",
+                  "project": {
+                      "id": 1,
+                      "name": "mantisbt"
+                  },
+                  "category": {
+                      "id": 5,
+                      "name": "bugtracker"
+                  },
+                  "handler": {
+                      "name": "vboctor"
+                  },
+                  "view_state": {
+                      "id": 10,
+                      "name": "public"
+                  },
+                  "priority": {
+                      "name": "normal"
+                  },
+                  "severity": {
+                      "name": "trivial"
+                  },
+                  "reproducibility": {
+                      "name": "always"
+                  },
+                  "sticky": false,
+                  "custom_fields": [
+                      {
+                          "field": {
+                              "id": 4,
+                              "name": "The City"
+                          },
+                          "value": "Seattle"
+                      }
+                  ],
+                  "tags": [
+                      {
+                          "name": "mantishub"
+                      }
+                  ]
+              }
+      tags:
+        - Issues
+  /issues/:
+    post:
+      summary: Create an issue (minimal)
+      description: |-
+        Shows the creation of issue with minimal information.
+
+        Available since MantisBT 2.3.0.
+      operationId: Createanissue(minimal)
+      parameters:
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        description: |-
+          Shows the creation of issue with minimal information.
+
+          Available since MantisBT 2.3.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                summary: This is a test issue
+                description: This is a test description
+                category:
+                  name: General
+                project:
+                  name: project1
+            example: |-
+              {
+                "summary": "This is a test issue",
+                "description": "This is a test description",
+                "category": {
+                  "name": "General"
+                },
+                "project": {
+                  "name": "project1"
+                }
+              }
+      tags:
+        - Issues
+  '/issues/{issue_id}/notes':
+    post:
+      summary: Create an issue note
+      description: |-
+        Create a simple note.
+
+        Available since MantisBT 2.6.0.
+      operationId: Createanissuenote
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        description: |-
+          Create a simple note.
+
+          Available since MantisBT 2.6.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                text: test note
+                view_state:
+                  name: public
+            example: |-
+              {
+                "text": "test note",
+                "view_state": {
+                  "name": "public"
+                }
+              }
+      tags:
+        - Issues
+  '/issues/{issue_id}/notes/{issue_note_id}':
+    delete:
+      summary: Delete an issue note
+      description: |-
+        Delete an issue note.
+
+        Available since MantisBT 2.6.0.
+      operationId: Deleteanissuenote
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id
+        - $ref: '#/components/parameters/issue_note_id'
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      tags:
+        - Issues
+  '/issues/{issue_id}/monitors':
+    post:
+      summary: Monitor an issue
+      description: |-
+        Have logged in user monitor the specified issue.
+
+        Available since MantisBT 2.11.0.
+      operationId: Monitoranissue
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        description: |-
+          Have logged in user monitor the specified issue.
+
+          Available since MantisBT 2.11.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example: ''
+            example: ''
+      tags:
+        - Issues
+  '/issues/{issue_id}/relationships/':
+    post:
+      summary: Attach a tag to issue copy
+      description: |-
+        Add issue relationship to an issue.  If a relationship with the target issue already exists, it will be updated.
+
+        Available since MantisBT 2.11.0.
+      operationId: Attachatagtoissuecopy
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        description: |-
+          Add issue relationship to an issue.  If a relationship with the target issue already exists, it will be updated.
+
+          Available since MantisBT 2.11.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                issue:
+                  id: 1235
+                type:
+                  id: 1
+                  name: related-to
+            example: |-
+              {
+                "issue": {
+                  "id": 1235
+                },
+                "type": {
+                  "id": 1,
+                  "name": "related-to"
+                }
+              }
+      tags:
+        - Issues
+  '/issues/{issue_id}/relationships/{relationship_id}':
+    delete:
+      summary: Delete an issue relationship
+      description: |-
+        Delete an issue relationship.
+
+        Available since MantisBT 2.6.0.
+      operationId: Deleteanissuerelationship
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id
+        - $ref: '#/components/parameters/relationship_id'
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      tags:
+        - Issues
+  /projects/:
+    get:
+      summary: Get all projects
+      description: |-
+        Get all projects and sub-projects accessible to user.
+
+        Available since MantisBT 2.5.0.
+      operationId: Getallprojects
+      parameters:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                projects:
+                  - id: 1
+                    name: mantisbt
+                    status:
+                      id: 10
+                      name: development
+                      label: development
+                    description: Mantis.  Report problems with the actual bug tracker here. (Do not remove this account)
+                    enabled: true
+                    view_state:
+                      id: 10
+                      name: public
+                      label: public
+                    access_level:
+                      id: 90
+                      name: administrator
+                      label: administrator
+                    custom_fields:
+                      - id: 8
+                        name: Email
+                        type: email
+                        default_value: ''
+                        possible_values: ''
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        display_report: true
+                        display_update: true
+                        display_resolved: true
+                        display_closed: true
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                      - id: 1
+                        name: Version Enum
+                        type: enum
+                        default_value: ''
+                        possible_values: '|0.19.0a2|0.19.0a1|0.19.0|0.18.3|0.18.2|0.18.1|0.18.0rc2|0.18.0a5|0.18.0a4|0.18.0a3|0.18.0a2|0.18.0a1'
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 55
+                          name: developer
+                          label: developer
+                        display_report: true
+                        display_update: true
+                        display_resolved: true
+                        display_closed: true
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                      - id: 5
+                        name: Floaty
+                        type: float
+                        default_value: ''
+                        possible_values: ''
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        display_report: true
+                        display_update: true
+                        display_resolved: true
+                        display_closed: true
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                      - id: 6
+                        name: Listy
+                        type: multilist
+                        default_value: ''
+                        possible_values: a|b|c|d|e|f|g
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        display_report: true
+                        display_update: true
+                        display_resolved: false
+                        display_closed: false
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                      - id: 3
+                        name: Place in Queue
+                        type: float
+                        default_value: ''
+                        possible_values: ''
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        display_report: true
+                        display_update: true
+                        display_resolved: false
+                        display_closed: false
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                      - id: 10
+                        name: SomeCheckbox
+                        type: checkbox
+                        default_value: ''
+                        possible_values: Test|Test2
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        display_report: true
+                        display_update: true
+                        display_resolved: true
+                        display_closed: true
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                      - id: 7
+                        name: SomeDate
+                        type: date
+                        default_value: '{+2 days}'
+                        possible_values: ''
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 25
+                          name: reporter
+                          label: reporter
+                        display_report: true
+                        display_update: true
+                        display_resolved: false
+                        display_closed: false
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                      - id: 11
+                        name: SomeRadio
+                        type: '9'
+                        default_value: ''
+                        possible_values: Radio1|Radio2
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        display_report: true
+                        display_update: true
+                        display_resolved: true
+                        display_closed: true
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                      - id: 9
+                        name: SomeTextArea
+                        type: textarea
+                        default_value: ''
+                        possible_values: ''
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        display_report: true
+                        display_update: true
+                        display_resolved: true
+                        display_closed: true
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                      - id: 4
+                        name: The City
+                        type: string
+                        default_value: ''
+                        possible_values: ''
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 25
+                          name: reporter
+                          label: reporter
+                        display_report: true
+                        display_update: true
+                        display_resolved: true
+                        display_closed: true
+                        require_report: true
+                        require_update: true
+                        require_resolved: true
+                        require_closed: true
+                    versions:
+                      - id: 258
+                        name: 2.0.x
+                        description: ''
+                        released: false
+                        obsolete: false
+                        timestamp: '2016-10-02T18:45:04-04:00'
+                      - id: 257
+                        name: 1.3.x
+                        description: ''
+                        released: false
+                        obsolete: false
+                        timestamp: '2016-10-02T18:44:00-04:00'
+                      - id: 256
+                        name: 2.0.0-beta.3
+                        description: ''
+                        released: true
+                        obsolete: false
+                        timestamp: '2016-10-02T11:31:00-04:00'
+                      - id: 255
+                        name: 1.3.2
+                        description: ''
+                        released: true
+                        obsolete: false
+                        timestamp: '2016-10-02T11:30:00-04:00'
+                      - id: 254
+                        name: 2.0.0-beta.2
+                        description: ''
+                        released: true
+                        obsolete: false
+                        timestamp: '2016-08-27T04:00:00-04:00'
+                      - id: 253
+                        name: 1.3.1
+                        description: ''
+                        released: true
+                        obsolete: false
+                        timestamp: '2016-08-27T03:00:00-04:00'
+                      - id: 240
+                        name: 1.2.20
+                        description: "MantisBT 1.2.20 is the final maintenance and security release for the 1.2.x series. \r\nAll installations that are currently running any 1.2.x version are strongly advised to upgrade. \r\n\r\nThis release resolves 3 security and a couple of PHP 7 compatibility issues.\r\n"
+                        released: true
+                        obsolete: false
+                        timestamp: '2016-08-14T18:00:00-04:00'
+                      - id: 243
+                        name: 2.0.0-beta.1
+                        description: 'MantisBT 2.0.0 release focuses on improvements to the UI compared to 1.3.x release. As of this release, the db schema is the same between 1.3.x and 2.0.0-beta.1, enabling users to easily try 2.0.0-beta.1 and provide feedback.'
+                        released: true
+                        obsolete: false
+                        timestamp: '2016-07-19T14:15:00-04:00'
+                      - id: 250
+                        name: 1.3.0
+                        description: MantisBT 1.3.0 stable release
+                        released: true
+                        obsolete: false
+                        timestamp: '2016-07-09T19:26:00-04:00'
+                    categories:
+                      - id: 2
+                        name: administration
+                        project:
+                          id: 1
+                          name: mantisbt
+                      - id: 3
+                        name: api soap
+                        project:
+                          id: 1
+                          name: mantisbt
+                      - id: 71
+                        name: attachments
+                        project:
+                          id: 1
+                          name: mantisbt
+                      - id: 70
+                        name: auth openid
+                        project:
+                          id: 1
+                          name: mantisbt
+                      - id: 4
+                        name: authentication
+                        project:
+                          id: 1
+                          name: mantisbt
+                      - id: 132
+                        name: authorization
+                        project:
+                          id: 1
+                          name: mantisbt
+                      - id: 5
+                        name: bugtracker
+                        project:
+                          id: 1
+                          name: mantisbt
+                      - id: 6
+                        name: change log
+                        project:
+                          id: 1
+                          name: mantisbt
+                    subProjects:
+                      - id: 31
+                        name: SubProject1
+                  - id: 20
+                    name: Mylyn Connector
+                    status:
+                      id: 50
+                      name: stable
+                      label: stable
+                    description: Eclipse Mylyn Connector for MantisBT
+                    enabled: true
+                    view_state:
+                      id: 10
+                      name: public
+                      label: public
+                    access_level:
+                      id: 90
+                      name: administrator
+                      label: administrator
+                    custom_fields: []
+                    versions:
+                      - id: 151
+                        name: Backlog
+                        description: Issues accepted but not yet assigned to a release.
+                        released: false
+                        obsolete: false
+                        timestamp: '2037-12-30T19:00:00-05:00'
+                      - id: 237
+                        name: 3.11.0
+                        description: ''
+                        released: false
+                        obsolete: false
+                        timestamp: '2014-08-31T17:00:00-04:00'
+                    categories:
+                      - id: 75
+                        name: Build
+                        project:
+                          id: 20
+                          name: Mylyn Connector
+                      - id: 76
+                        name: Core
+                        project:
+                          id: 20
+                          name: Mylyn Connector
+                      - id: 1
+                        name: General
+                        project:
+                          id: 0
+                          name: null
+                      - id: 73
+                        name: Infrastructure
+                        project:
+                          id: 20
+                          name: Mylyn Connector
+                      - id: 77
+                        name: Tests
+                        project:
+                          id: 20
+                          name: Mylyn Connector
+                      - id: 78
+                        name: User Interface
+                        project:
+                          id: 20
+                          name: Mylyn Connector
+      tags:
+        - Projects
+    post:
+      summary: Create a project
+      description: |-
+        Create a project.
+
+        Available since MantisBT 2.17.0.
+      operationId: Createaproject
+      parameters:
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        description: |-
+          Create a project.
+
+          Available since MantisBT 2.17.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                id: 1
+                name: _new2
+                status:
+                  id: 10
+                  name: development
+                  label: development
+                description: Mantis.  Report problems with the actual bug tracker here. (Do not remove this account)
+                enabled: true
+                file_path: /tmp/
+                view_state:
+                  id: 10
+                  name: public
+                  label: public
+            example: |-
+              {
+                 "id": 1,
+                 "name": "_new2",
+                 "status": {
+                    "id": 10,
+                    "name": "development",
+                    "label": "development"
+                  },
+                  "description": "Mantis.  Report problems with the actual bug tracker here. (Do not remove this account)",
+                  "enabled": true,
+                  "file_path": "/tmp/",
+                  "view_state": {
+                    "id": 10,
+                    "name": "public",
+                    "label": "public"
+                  }
+              }
+      tags:
+        - Projects
+  '/projects/{project_id}':
+    get:
+      summary: Get a project
+      description: |-
+        Get a project given its id.
+
+        Available since MantisBT 2.14.0.
+      operationId: Getaproject
+      parameters:
+        - $ref: '#/components/parameters/project_id'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                projects:
+                  - id: 1
+                    name: mantisbt
+                    status:
+                      id: 10
+                      name: development
+                      label: development
+                    description: Mantis Project
+                    enabled: true
+                    view_state:
+                      id: 10
+                      name: public
+                      label: public
+                    access_level:
+                      id: 90
+                      name: administrator
+                      label: administrator
+                    custom_fields:
+                      - id: 8
+                        name: Email
+                        type: email
+                        default_value: ''
+                        possible_values: ''
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        display_report: true
+                        display_update: true
+                        display_resolved: true
+                        display_closed: true
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                    versions:
+                      - id: 258
+                        name: 2.0.x
+                        description: ''
+                        released: false
+                        obsolete: false
+                        timestamp: '2016-10-02T18:45:04-04:00'
+                    subProjects:
+                      - id: 31
+                        name: SubProject1
+      tags:
+        - Projects
+    patch:
+      summary: Update a project
+      description: |-
+        Update a project.
+
+        Available since MantisBT 2.17.0.
+      operationId: Updateaproject
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        description: |-
+          Update a project.
+
+          Available since MantisBT 2.17.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                id: 33
+                name: _new2bx
+                enabled: false
+            example: |-
+              {
+                 "id": 33,
+                 "name": "_new2bx",
+                 "enabled": false
+              }
+      tags:
+        - Projects
+    delete:
+      summary: Delete a project
+      description: |-
+        Delete a project given its id.
+
+        Available since MantisBT 2.17.0.
+      operationId: Deleteaproject
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The project id
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                projects:
+                  - id: 1
+                    name: mantisbt
+                    status:
+                      id: 10
+                      name: development
+                      label: development
+                    description: Mantis Project
+                    enabled: true
+                    view_state:
+                      id: 10
+                      name: public
+                      label: public
+                    access_level:
+                      id: 90
+                      name: administrator
+                      label: administrator
+                    custom_fields:
+                      - id: 8
+                        name: Email
+                        type: email
+                        default_value: ''
+                        possible_values: ''
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        display_report: true
+                        display_update: true
+                        display_resolved: true
+                        display_closed: true
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                    versions:
+                      - id: 258
+                        name: 2.0.x
+                        description: ''
+                        released: false
+                        obsolete: false
+                        timestamp: '2016-10-02T18:45:04-04:00'
+                    subProjects:
+                      - id: 31
+                        name: SubProject1
+      tags:
+        - Projects
+  '/projects/{project_id}/subprojects':
+    post:
+      summary: Add a sub-project
+      description: |-
+        Add a subproject to the specified project id.
+
+        Available since MantisBT 2.20.0.
+      operationId: Addasub-project
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The project id
+
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                projects:
+                  - id: 1
+                    name: mantisbt
+                    status:
+                      id: 10
+                      name: development
+                      label: development
+                    description: Mantis Project
+                    enabled: true
+                    view_state:
+                      id: 10
+                      name: public
+                      label: public
+                    access_level:
+                      id: 90
+                      name: administrator
+                      label: administrator
+                    custom_fields:
+                      - id: 8
+                        name: Email
+                        type: email
+                        default_value: ''
+                        possible_values: ''
+                        valid_regexp: ''
+                        length_min: 0
+                        length_max: 0
+                        access_level_r:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        access_level_rw:
+                          id: 10
+                          name: viewer
+                          label: viewer
+                        display_report: true
+                        display_update: true
+                        display_resolved: true
+                        display_closed: true
+                        require_report: false
+                        require_update: false
+                        require_resolved: false
+                        require_closed: false
+                    versions:
+                      - id: 258
+                        name: 2.0.x
+                        description: ''
+                        released: false
+                        obsolete: false
+                        timestamp: '2016-10-02T18:45:04-04:00'
+                    subProjects:
+                      - id: 31
+                        name: SubProject1
+      requestBody:
+        description: |-
+          Add a subproject to the specified project id.
+
+          Available since MantisBT 2.20.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                project:
+                  name: SubProject1
+                inherit_parent: true
+            example: |-
+              {
+                "project": {
+                  "name": "SubProject1"
+                },
+                "inherit_parent": true
+              }
+      tags:
+        - Projects
+  '/projects/{project_id}/subprojects/{subproject_id}':
+    patch:
+      summary: Update a subproject
+      description: |-
+        Update the subproject relationship properties.
+
+        Available since MantisBT 2.20.0.
+      operationId: Updateasubproject
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+        - $ref: '#/components/parameters/subproject_id'
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        description: |-
+          Update the subproject relationship properties.
+
+          Available since MantisBT 2.20.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                project:
+                  name: Subproject1
+                inherit_parent: true
+            example: |-
+              {
+                 "project": {
+                     "name": "Subproject1"
+                 },
+                 "inherit_parent": true
+              }
+      tags:
+        - Projects
+  '/projects/{project_id}/versions/':
+    post:
+      summary: Create a project version
+      description: |-
+        Add a project version.
+
+        Only name field is required.  Timestamp accepts date formats that can be parsed by PHP strtotime().
+
+        Available since MantisBT 2.15.0.
+      operationId: Createaprojectversion
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The project id
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      requestBody:
+        description: |-
+          Add a project version.
+
+          Only name field is required.  Timestamp accepts date formats that can be parsed by PHP strtotime().
+
+          Available since MantisBT 2.15.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                name: v1.0.0
+                description: Major new version
+                released: true
+                obsolete: false
+                timestamp: '2020-02-20'
+            example: |-
+              {
+                "name": "v1.0.0",
+                "description": "Major new version",
+                "released": true,
+                "obsolete": false,
+                "timestamp": "2020-02-20"
+              }
+      tags:
+        - Projects
+  /filters:
+    get:
+      summary: Get all filters
+      description: |-
+        Get all definitions for filters accessible to logged in user.
+
+        Available since MantisBT 2.10.0.
+      operationId: Getallfilters
+      parameters:
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      tags:
+        - Filters
+  '/filters/{filter_id}':
+    get:
+      summary: Get a filter
+      description: |-
+        Gets the definition of a filter given its id.
+
+        Available since MantisBT 2.10.0
+      operationId: Getafilter
+      parameters:
+        - $ref: '#/components/parameters/filter_id'
+      responses:
+        '200':
+          description: Filter by Id
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                filters:
+                  - id: 1
+                    name: Commented On
+                    owner:
+                      id: 1
+                      name: vboctor
+                    public: true
+                    project:
+                      id: 0
+                      name: All Projects
+                    criteria:
+                      commented:
+                        - id: '[myself]'
+                      hide_status:
+                        id: 80
+                        name: resolved
+                        label: resolved
+                        color: '#d2f5b0'
+                    url: 'http://localhost/mantisbt/search.php?project_id=1&note_user_id=-1&sticky=on&sort=last_updated&dir=DESC&per_page=50&hide_status=80&match_type=0'
+      tags:
+        - Filters
+    delete:
+      summary: Delete a filter
+      description: |-
+        Delete a filter definition given its id.  This is usable for user defined filters and not for standard filters.
+
+        Available since MantisBT 2.10.0.
+      operationId: Deleteafilter
+      parameters:
+        - name: filter_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The filter id
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      tags:
+        - Filters
+  /users/me:
+    get:
+      summary: Get My User Info
+      description: Get information about logged in user.
+      operationId: GetMyUserInfo
+      parameters:
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      tags:
+        - Users
+  /users/:
+    post:
+      summary: Create a user
+      description: |-
+        Creates a user.
+
+        Available since MantisBT 2.11.0.
+      operationId: Createauser
+      parameters:
+
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '201':
+          description: Success
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/201'
+              example:
+                user:
+                  id: 1000
+                  name: testuser
+                  real_name: Victor Boctor
+                  email: victor@yet-another-domain.com
+                  language: english
+                  timezone: America/Los_Angeles
+                  access_level:
+                    id: 40
+                    name: updater
+                    label: updater
+                  projects:
+                    - id: 1
+                      name: mantisbt
+                    - id: 12
+                      name: MantisTouch
+                    - id: 20
+                      name: Mylyn Connector
+                    - id: 25
+                      name: Plugin - agileMantis
+                    - id: 11
+                      name: Plugin - CsvImport
+                    - id: 21
+                      name: Plugin - CustomerManagement
+                    - id: 10
+                      name: Plugin - EmailReporting
+                    - id: 15
+                      name: Plugin - FilterPageEdit
+                    - id: 14
+                      name: Plugin - InlineColumnConfiguration
+                    - id: 16
+                      name: Plugin - LinkedCustomFields
+                    - id: 9
+                      name: Plugin - MachineAD
+                    - id: 22
+                      name: Plugin - MantisTouchRedirect
+                    - id: 6
+                      name: Plugin - RecurrCall
+                    - id: 13
+                      name: Plugin - RelatedIssuesExport
+                    - id: 7
+                      name: Plugin - Reminder
+                    - id: 8
+                      name: Plugin - Tasks
+                    - id: 18
+                      name: Plugin - Time Tracking
+      requestBody:
+        description: |-
+          Creates a user.
+
+          Available since MantisBT 2.11.0.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example:
+                username: vtest12
+                password: p@ssw0rd
+                real_name: Victor Test12
+                email: victor12@example2.com
+                access_level:
+                  name: updater
+                enabled: true
+                protected: false
+            example: |-
+              {
+                "username": "vtest12",
+                "password": "p@ssw0rd",
+                "real_name": "Victor Test12",
+                "email": "victor12@example2.com",
+                "access_level": { "name": "updater" },
+                "enabled": true,
+                "protected": false
+              }
+      tags:
+        - Users
+  '/users/{user_id}':
+    delete:
+      summary: Delete a user
+      description: |-
+        Deletes the specified user.
+
+        Available since MantisBT 2.11.0.
+      operationId: Deleteauser
+      parameters:
+        - $ref: '#/components/parameters/user_id'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '204':
+          description: Success
+          content:
+            '':
+              schema: {}
+      tags:
+        - Users
+  '/users/{user_id}/reset':
+    put:
+      summary: Reset user password
+      description: |-
+        Resets password for the specific user.
+
+        Available since MantisBT 2.24.0.
+      operationId: Resetuserpassword
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The user id to reset password for
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      tags:
+        - Users
+  /config:
+    get:
+      summary: Get Configuration Option
+      description: |-
+        Get specified config option.  If an option doesn't exist or is marked as private, it will be silently skipped.
+
+        Some config options get extra handling to provide more useful response.  For example:
+
+        - Enumerations - The enumeration is parsed into an array of objects, each object including id, name and localized label.
+
+        For list of possible config options to retrieve see the following file:
+        https://github.com/mantisbt/mantisbt/blob/master/config_defaults_inc.php
+
+        When requesting an option, don't supply the `$g_` prefix for the string name.  Only options that are listed as public can be retrieved via this API.  Search the `config_defaults_inc.php` file for `$g_public_config_names` to see the list of public options.
+
+        Available since MantisBT 2.3.0.
+      operationId: GetConfigurationOption
+      parameters:
+        - $ref: '#/components/parameters/option'
+      responses:
+        '200':
+          description: Config Get
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                configs:
+                  - option: csv_separator
+                    value: ','
+      tags:
+        - Config
+  /lang:
+    get:
+      summary: Get a localized string
+      description: |-
+        Get the specified localized string.  If string doesn't exist, it will be silently skipped.
+
+        For list of possible strings to retrieve see the following file:
+        https://github.com/mantisbt/mantisbt/blob/master/lang/strings_english.txt
+
+        When requesting a string, don't supply the `$s_` prefix for the string name.
+      operationId: Getalocalizedstring
+      parameters:
+        - $ref: '#/components/parameters/string'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                strings:
+                  - name: all_projects
+                    localized: Alle Projekte
+                language: german
+      tags:
+        - Lang
+  '/pages/issues/{issue_id}/view':
+    get:
+      summary: Get Issue View Page
+      description: |-
+        IN DEVELOPMENT - NOT RELEASED YET!
+
+        Get information necessary to render an issue view page for the specified issue.
+      operationId: GetIssueViewPage
+      parameters:
+        - name: issue_id
+          in: path
+          required: true
+          style: simple
+          schema:
+            type: number
+          description: The issue id
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                issues:
+                  - id: 1
+                    summary: Sample issue title
+                    description: Sample issue description
+                    project:
+                      id: 1
+                      name: mantisbt
+                    category:
+                      id: 135
+                      name: General
+                    reporter:
+                      id: 1
+                      name: vboctor
+                      real_name: Victor Boctor
+                      email: vboctor@example.com
+                    status:
+                      id: 10
+                      name: new
+                      label: new
+                      color: '#fcbdbd'
+                    resolution:
+                      id: 10
+                      name: open
+                      label: open
+                    view_state:
+                      id: 10
+                      name: public
+                      label: public
+                    priority:
+                      id: 30
+                      name: normal
+                      label: normal
+                    severity:
+                      id: 50
+                      name: minor
+                      label: minor
+                    reproducibility:
+                      id: 70
+                      name: have not tried
+                      label: have not tried
+                    sticky: false
+                    created_at: '2017-04-23T13:12:28-04:00'
+                    updated_at: '2017-04-23T13:12:28-04:00'
+                    custom_fields:
+                      - field:
+                          id: 4
+                          name: The City
+                        value: Seattle
+                    history:
+                      - created_at: '2017-04-23T13:12:28-04:00'
+                        user:
+                          id: 36771
+                          name: vboctor
+                          real_name: Victor Boctor
+                          email: vboctor@example.com
+                        type:
+                          id: 1
+                          name: issue-new
+                        message: New Issue
+        '404':
+          description: Not Found
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/404'
+              example:
+                message: 'Issue #200000 not found'
+                code: 1100
+                localized: Issue 200000 not found.
+      tags:
+        - Pages
+
+components:
+  securitySchemes:
+    MantisApiToken:
+      description: MantisBT API token, created in http://path.to/mantisbt/api_tokens_page.php
+      type: apiKey
+      in: header
+      name: Authorization
+
+  parameters:
+    issue_id:
+      name: issue_id
+      in: path
+      required: true
+      style: simple
+      schema:
+        type: number
+      description: The issue id
+    file_id:
+      name: file_id
+      in: path
+      required: true
+      style: simple
+      schema:
+        type: number
+      description: The attachment file id
+    page_size:
+      name: page_size
+      in: query
+      required: true
+      style: form
+      schema:
+        type: number
+      description: The number of issues to return per page.  Default is 50 but overridable by configuration.
+    page:
+      name: page
+      in: query
+      required: true
+      style: form
+      schema:
+        type: number
+      description: The page number (default is 1)
+    issue_note_id:
+      name: issue_note_id
+      in: path
+      required: true
+      style: simple
+      schema:
+        type: number
+      description: The issue note id
+    relationship_id:
+      name: relationship_id
+      in: path
+      required: true
+      style: simple
+      schema:
+        type: number
+      description: The relationship id
+    project_id:
+      name: project_id
+      in: path
+      required: true
+      style: simple
+      schema:
+        type: number
+      description: The project id
+    subproject_id:
+      name: subproject_id
+      in: path
+      required: true
+      style: simple
+      schema:
+        type: number
+    filter_id:
+      name: filter_id
+      in: path
+      required: true
+      style: simple
+      schema:
+        type: number
+      description: The filter id
+    user_id:
+      name: user_id
+      in: path
+      required: true
+      style: simple
+      schema:
+        type: number
+      description: The user id to delete
+    option:
+      name: option
+      in: query
+      required: true
+      style: form
+      schema:
+        type: string
+        example: csv_separator
+    string:
+      name: string
+      in: query
+      required: true
+      style: form
+      schema:
+        type: string
+        example: all_projects
+  schemas:
+    '200':
+      type: object
+      properties:
+        issues:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: ''
+                default: 1
+              summary:
+                type: string
+                description: ''
+                default: Sample issue title
+              description:
+                type: string
+                description: ''
+                default: Sample issue description
+              project:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ''
+                    default: 1
+                  name:
+                    type: string
+                    description: ''
+                    default: mantisbt
+              category:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ''
+                    default: 135
+                  name:
+                    type: string
+                    description: ''
+                    default: General
+              reporter:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ''
+                    default: 1
+                  name:
+                    type: string
+                    description: ''
+                    default: vboctor
+                  real_name:
+                    type: string
+                    description: ''
+                    default: Victor Boctor
+                  email:
+                    type: string
+                    description: ''
+                    default: vboctor@example.com
+              status:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ''
+                    default: 10
+                  name:
+                    type: string
+                    description: ''
+                    default: new
+                  label:
+                    type: string
+                    description: ''
+                    default: new
+                  color:
+                    type: string
+                    description: ''
+                    default: '#fcbdbd'
+              resolution:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ''
+                    default: 10
+                  name:
+                    type: string
+                    description: ''
+                    default: open
+                  label:
+                    type: string
+                    description: ''
+                    default: open
+              view_state:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ''
+                    default: 10
+                  name:
+                    type: string
+                    description: ''
+                    default: public
+                  label:
+                    type: string
+                    description: ''
+                    default: public
+              priority:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ''
+                    default: 30
+                  name:
+                    type: string
+                    description: ''
+                    default: normal
+                  label:
+                    type: string
+                    description: ''
+                    default: normal
+              severity:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ''
+                    default: 50
+                  name:
+                    type: string
+                    description: ''
+                    default: minor
+                  label:
+                    type: string
+                    description: ''
+                    default: minor
+              reproducibility:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ''
+                    default: 70
+                  name:
+                    type: string
+                    description: ''
+                    default: have not tried
+                  label:
+                    type: string
+                    description: ''
+                    default: have not tried
+              sticky: {}
+              created_at:
+                type: string
+                description: ''
+                default: '2017-04-23T13:12:28-04:00'
+              updated_at:
+                type: string
+                description: ''
+                default: '2017-04-23T13:12:28-04:00'
+              custom_fields:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: ''
+                          default: 4
+                        name:
+                          type: string
+                          description: ''
+                          default: The City
+                    value:
+                      type: string
+                      description: ''
+                      default: Seattle
+              history:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    created_at:
+                      type: string
+                      description: ''
+                      default: '2017-04-23T13:12:28-04:00'
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: ''
+                          default: 36771
+                        name:
+                          type: string
+                          description: ''
+                          default: vboctor
+                        real_name:
+                          type: string
+                          description: ''
+                          default: Victor Boctor
+                        email:
+                          type: string
+                          description: ''
+                          default: vboctor@example.com
+                    type:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: ''
+                          default: 1
+                        name:
+                          type: string
+                          description: ''
+                          default: issue-new
+                    message:
+                      type: string
+                      description: ''
+                      default: New Issue
+    '201':
+      type: object
+      properties:
+        issue:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: ''
+              default: 1
+            summary:
+              type: string
+              description: ''
+              default: Sample REST issue
+            description:
+              type: string
+              description: ''
+              default: Description for sample REST issue.
+            additional_information:
+              type: string
+              description: ''
+              default: More info about the issue
+            project:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ''
+                  default: 1
+                name:
+                  type: string
+                  description: ''
+                  default: mantisbt
+            category:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ''
+                  default: 5
+                name:
+                  type: string
+                  description: ''
+                  default: bugtracker
+            reporter:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ''
+                  default: 2
+                name:
+                  type: string
+                  description: ''
+                  default: GermanReporter
+            handler:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ''
+                  default: 1
+                name:
+                  type: string
+                  description: ''
+                  default: vboctor
+            status:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ''
+                  default: 50
+                name:
+                  type: string
+                  description: ''
+                  default: assigned
+                label:
+                  type: string
+                  description: ''
+                  default: zugewiesen
+                color:
+                  type: string
+                  description: ''
+                  default: '#c2dfff'
+            resolution:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ''
+                  default: 10
+                name:
+                  type: string
+                  description: ''
+                  default: open
+                label:
+                  type: string
+                  description: ''
+                  default: offen
+            view_state:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ''
+                  default: 10
+                name:
+                  type: string
+                  description: ''
+                  default: public
+                label:
+                  type: string
+                  description: ''
+                  default: öffentlich
+            priority:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ''
+                  default: 30
+                name:
+                  type: string
+                  description: ''
+                  default: normal
+                label:
+                  type: string
+                  description: ''
+                  default: normal
+            severity:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ''
+                  default: 20
+                name:
+                  type: string
+                  description: ''
+                  default: trivial
+                label:
+                  type: string
+                  description: ''
+                  default: Trivial
+            reproducibility:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: ''
+                  default: 10
+                name:
+                  type: string
+                  description: ''
+                  default: always
+                label:
+                  type: string
+                  description: ''
+                  default: immer
+            sticky: {}
+            created_at:
+              type: string
+              description: ''
+              default: '2018-01-07T18:47:35-05:00'
+            updated_at:
+              type: string
+              description: ''
+              default: '2018-01-07T18:47:35-05:00'
+            custom_fields:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: ''
+                        default: 4
+                      name:
+                        type: string
+                        description: ''
+                        default: The City
+                  value:
+                    type: string
+                    description: ''
+                    default: Seattle
+            tags:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ''
+                    default: '1'
+                  name:
+                    type: string
+                    description: ''
+                    default: mantishub
+            history:
+              type: array
+              items:
+                type: object
+                properties:
+                  created_at:
+                    type: string
+                    description: ''
+                    default: '2018-01-07T18:47:35-05:00'
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: ''
+                        default: 2
+                      name:
+                        type: string
+                        description: ''
+                        default: GermanReporter
+                      email:
+                        type: string
+                        description: ''
+                        default: german-reporter@example.com
+                  type:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: ''
+                        default: 1
+                      name:
+                        type: string
+                        description: ''
+                        default: issue-new
+                  message:
+                    type: string
+                    description: ''
+                    default: Neuer Eintrag
+    '403':
+      type: object
+      properties:
+        message:
+          type: string
+          description: ''
+          default: 'Access denied for user GermanReporter. Reason: Not enough rights to update issues.'
+    '404':
+      type: object
+      properties:
+        message:
+          type: string
+          description: ''
+          default: 'Issue #200000 not found'
+        code:
+          type: integer
+          description: ''
+          default: 1100
+        localized:
+          type: string
+          description: ''
+          default: Issue 200000 not found.
+tags: []
+externalDocs:
+  url: ''
+  description: ''
+
+#warnings from Postman conversion:
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : get{{url}}/api/rest/issues'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : get{{url}}/api/rest/issues'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : get{{url}}/api/rest/issues'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : get{{url}}/api/rest/issues'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : get{{url}}/api/rest/issues'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : get{{url}}/api/rest/issues'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : post{{url}}/api/rest/issues'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : patch{{url}}/api/rest/issues/:issue_id'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : post{{url}}/api/rest/issues/:issue_id/notes'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : post{{url}}/api/rest/issues/:issue_id/notes'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : post{{url}}/api/rest/issues/:issue_id/monitors'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : post{{url}}/api/rest/issues/:issue_id/notes'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : post{{url}}/api/rest/issues/:issue_id/notes'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : post{{url}}/api/rest/issues/:issue_id/relationships/'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : delete{{url}}/api/rest/projects/:project_id'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : post{{url}}/api/rest/users/'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : get{{url}}/api/rest/config'
+#  - 'Two GET or two POST methods for the same path are not allowed in OpenAPI specification : get{{url}}/api/rest/lang'
