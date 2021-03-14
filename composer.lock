@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "22c49b182f465086e5be0148e117bd4a4aa2baac"
+                "reference": "085601a6df6bbcbf86ca76c96786ece590bfbd86"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/22c49b182f465086e5be0148e117bd4a4aa2baac",
-                "reference": "22c49b182f465086e5be0148e117bd4a4aa2baac",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/085601a6df6bbcbf86ca76c96786ece590bfbd86",
+                "reference": "085601a6df6bbcbf86ca76c96786ece590bfbd86",
                 "shasum": ""
             },
             "require": {
@@ -62,7 +62,7 @@
                 "issues": "https://github.com/ADOdb/ADOdb/issues",
                 "source": "https://github.com/ADOdb/ADOdb"
             },
-            "time": "2021-03-12T22:55:00+00:00"
+            "time": "2021-03-14T16:46:48+00:00"
         },
         {
             "name": "dapphp/securimage",
