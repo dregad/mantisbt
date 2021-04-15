@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8893fa52a9d9433bf36e5e7da7a350fb",
+    "content-hash": "394dffe533c358242829c3b36389544b",
     "packages": [
         {
             "name": "adodb/adodb-php",
-            "version": "dev-i692-mssql-insert",
+            "version": "dev-hotfix/5.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "085601a6df6bbcbf86ca76c96786ece590bfbd86"
+                "reference": "7e49dfb14cb3ae8a033b277c6c8fc420b1ad5948"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/085601a6df6bbcbf86ca76c96786ece590bfbd86",
-                "reference": "085601a6df6bbcbf86ca76c96786ece590bfbd86",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/7e49dfb14cb3ae8a033b277c6c8fc420b1ad5948",
+                "reference": "7e49dfb14cb3ae8a033b277c6c8fc420b1ad5948",
                 "shasum": ""
             },
             "require": {
@@ -62,7 +62,7 @@
                 "issues": "https://github.com/ADOdb/ADOdb/issues",
                 "source": "https://github.com/ADOdb/ADOdb"
             },
-            "time": "2021-03-14T16:46:48+00:00"
+            "time": "2021-04-11T08:38:20+00:00"
         },
         {
             "name": "dapphp/securimage",
