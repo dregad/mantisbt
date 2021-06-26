@@ -400,7 +400,7 @@ print_admin_menu_bar( 'test_langs.php' );
 			<div class="widget-main no-padding table-responsive">
 				<table class="table table-bordered table-condensed ">
 <?php
-checklangdir( $t_mantis_dir );
+//checklangdir( $t_mantis_dir );
 ?>
 				</table>
 			</div>
@@ -453,7 +453,9 @@ function checkplugins() {
 	}
 	echo '</tr>';
 
+$i=0;
 	foreach( $t_plugins as $t_plugin => $t_path ) {
+if(++$i > 5 && $t_plugin != 'Example' ) continue;
 		echo '<tr><th colspan="2">';
 		echo "Checking language files for plugin <strong>$t_plugin</strong>";
 		echo '</th></tr>';
