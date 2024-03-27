@@ -46,6 +46,7 @@
 	description,
 	steps_to_reproduce?,
 	additional_information?,
+	bugnotes?
 	)
 >
 
@@ -130,3 +131,25 @@
 <!ELEMENT sponsorship_total (#PCDATA)>
 <!ELEMENT sticky (#PCDATA)>
 <!ELEMENT profile_id (#PCDATA)>
+
+<!-- Issue Notes element
+-->
+<!ELEMENT bugnotes (bugnote*)>
+<!ELEMENT bugnote (
+	id,
+	reporter,
+	note,
+	view_state,
+	date_submitted,
+	last_modified,
+	note_type,
+	note_attr,
+	time_tracking
+	)
+>
+
+<!ELEMENT note (#PCDATA)>
+<!ELEMENT last_modified (#PCDATA)>
+<!ELEMENT note_type (#PCDATA)>
+<!ELEMENT note_attr (#PCDATA)>
+<!ELEMENT time_tracking (#PCDATA)>
