@@ -1,7 +1,7 @@
-<!-- Mantis DTD for xml export-->
+<!-- DTD for MantisBT XMLImportExport plugin -->
 
-<!-- root element <mantis>, composed by one or more <issue> elements -->
-
+<!-- Root element <mantis>, composed of one or more <issue> elements
+-->
 <!ELEMENT mantis (issue+)>
 <!ATTLIST mantis
 	version CDATA #REQUIRED
@@ -11,6 +11,9 @@
 	format CDATA #REQUIRED
 >
 
+<!-- MantisBT Issue element
+	The sequence of child elements must match the order of BugData class properties
+-->
 <!ELEMENT issue (
 	id,
 	description,
