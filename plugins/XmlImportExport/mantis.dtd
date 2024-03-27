@@ -116,6 +116,9 @@
 <!ELEMENT target_version (#PCDATA)>
 <!ELEMENT build (#PCDATA)>
 <!ELEMENT view_state (#PCDATA)>
+<!ATTLIST view_state
+	id CDATA #REQUIRED
+>
 <!ELEMENT summary (#PCDATA)>
 <!ELEMENT due_date (#PCDATA)>
 
