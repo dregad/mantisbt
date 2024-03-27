@@ -16,7 +16,7 @@
 -->
 <!ELEMENT issue (
 	id,
-	project_id,
+	project,
 	reporter,
 	handler?,
 	duplicate_id?,
@@ -53,8 +53,11 @@
 <!ELEMENT description (#PCDATA)>
 <!ELEMENT additional_information (#PCDATA)>
 <!ELEMENT steps_to_reproduce (#PCDATA)>
-<!ELEMENT project_id (#PCDATA)>
 
+<!ELEMENT project (#PCDATA)>
+<!ATTLIST project
+	id CDATA #REQUIRED
+>
 <!ELEMENT reporter (#PCDATA)>
 <!ATTLIST reporter
 	id CDATA #REQUIRED
