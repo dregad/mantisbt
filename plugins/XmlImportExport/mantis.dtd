@@ -16,9 +16,6 @@
 -->
 <!ELEMENT issue (
 	id,
-	description,
-	additional_information?,
-	steps_to_reproduce?,
 	project_id,
 	reporter,
 	handler?,
@@ -29,6 +26,7 @@
 	status?,
 	resolution?,
 	projection?,
+	category?,
 	date_submitted,
 	last_updated,
 	eta?,
@@ -39,12 +37,15 @@
 	fixed_in_version?,
 	target_version?,
 	build?,
-	profile_id?,
 	view_state,
 	summary,
-	category?,
 	sponsorship_total?,
-	sticky?
+	sticky?,
+	due_date?,
+	profile_id?,
+	description,
+	steps_to_reproduce?,
+	additional_information?,
 	)
 >
 
