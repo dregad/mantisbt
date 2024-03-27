@@ -117,6 +117,7 @@
 <!ELEMENT build (#PCDATA)>
 <!ELEMENT view_state (#PCDATA)>
 <!ELEMENT summary (#PCDATA)>
+<!ELEMENT due_date (#PCDATA)>
 
 <!ELEMENT category (#PCDATA)>
 <!ATTLIST category
