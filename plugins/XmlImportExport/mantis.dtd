@@ -57,44 +57,44 @@
 
 <!ELEMENT reporter (#PCDATA)>
 <!ATTLIST reporter
-	id (ID) #REQUIRED
+	id CDATA #REQUIRED
 >
 
 <!ELEMENT handler (#PCDATA)>
 <!ATTLIST handler
-	id (ID) #REQUIRED
+	id CDATA #REQUIRED
 >
 
 <!ELEMENT duplicate_id (#PCDATA)>
 
 <!ELEMENT priority (#PCDATA)>
 <!ATTLIST priority
-	id (ID) #REQUIRED
+	id CDATA #REQUIRED
 >
 
 <!ELEMENT severity (#PCDATA)>
 <!ATTLIST severity
-	id (ID) #REQUIRED
+	id CDATA #REQUIRED
 >
 
 <!ELEMENT reproducibility (#PCDATA)>
 <!ATTLIST reproducibility
-	id (ID) #REQUIRED
+	id CDATA #REQUIRED
 >
 
 <!ELEMENT status (#PCDATA)>
 <!ATTLIST status
-	id (ID) #REQUIRED
+	id CDATA #REQUIRED
 >
 
 <!ELEMENT resolution (#PCDATA)>
 <!ATTLIST resolution
-	id (ID) #REQUIRED
+	id CDATA #REQUIRED
 >
 
 <!ELEMENT projection (#PCDATA)>
 <!ATTLIST projection
-	id (ID) #REQUIRED
+	id CDATA #REQUIRED
 >
 
 <!ELEMENT date_submitted (#PCDATA)>
@@ -102,7 +102,7 @@
 
 <!ELEMENT eta (#PCDATA)>
 <!ATTLIST eta
-	id (ID) #REQUIRED
+	id CDATA #REQUIRED
 >
 
 <!ELEMENT os (#PCDATA)>
@@ -117,7 +117,7 @@
 
 <!ELEMENT category (#PCDATA)>
 <!ATTLIST category
-	id (ID) #REQUIRED
+	id CDATA #REQUIRED
 >
 
 <!ELEMENT sponsorship_total (#PCDATA)>
