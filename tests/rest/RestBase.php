@@ -198,7 +198,14 @@ abstract class RestBase extends TestCase {
 	 * @return string
 	 */
 	protected function getTestCaseReference() {
-		return static::class . '::' . $this->getName();
+		# getName() method is marked internal, and was renamed in PHPUnit 10.2 (commit d0dbaafb)
+		if( version_compare( PHPUnit\Runner\Version::id(), '10.2', '<' )) {
+			$t_test_method = $this->getName();
+		} else {
+			$t_test_method = $this->name();
+		}
+
+		return static::class . '::' . $t_test_method;
 	}
 
 	/**
