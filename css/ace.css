@@ -2266,7 +2266,7 @@ no_such_element:-o-prefocus,
     z-index: 1027;
 }
 .sidebar.sidebar-fixed:before {
-    height: 5000px;
+    max-height: 5000px;
     top: auto;
     bottom: auto;
 }
