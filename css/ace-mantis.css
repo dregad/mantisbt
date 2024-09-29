@@ -615,6 +615,33 @@ ul.changelog > li, ul.roadmap > li {
     padding-right: 12px;
 }
 
+/* Scrolling sidebar menu */
+.sidebar.sidebar-fixed:before {
+    height: unset;
+}
+
+.skin-3 .sidebar {
+    overflow: auto;
+    height: 100%;
+    padding-bottom: 45px;
+}
+
+.skin-3 .sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.skin-3 .sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.skin-3 .sidebar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+}
+
+.skin-3 .sidebar::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
 /* Small devices (tablets, 768px and up) */
 @media (min-width: 768px) {
     .page-content {
