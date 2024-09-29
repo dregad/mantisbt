@@ -642,6 +642,10 @@ ul.changelog > li, ul.roadmap > li {
     background: #a1a1a1;
 }
 
+.sidebar.responsive.display {
+    overflow-y: auto;
+}
+
 /* Small devices (tablets, 768px and up) */
 @media (min-width: 768px) {
     .page-content {
