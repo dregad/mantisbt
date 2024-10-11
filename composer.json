@@ -14,7 +14,9 @@
         "phpmailer/phpmailer": "~7.0",
         "parsedown/parsedown": "^1.7.5",
         "ezyang/htmlpurifier": "^4.14",
-        "dapphp/securimage": "dev-mantis"
+        "dapphp/securimage": "dev-mantis",
+        "zetacomponents/base": "^1.9",
+        "zetacomponents/graph": "^1.7"
     },
     "require-dev": {
         "ext-zip": "*",

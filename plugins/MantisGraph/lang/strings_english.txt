@@ -89,3 +89,12 @@ $s_plugin_MantisGraph_other_categories = 'other categories (%d)';
 $s_plugin_MantisGraph_other_projects = 'other projects (%d)';
 $s_plugin_MantisGraph_bucket = 'Bucket';
 $s_plugin_MantisGraph_date = 'Date';
+
+$s_plugin_MantisGraph_select = 'Select';
+$s_plugin_MantisGraph_select_bystatus = 'By status';
+$s_plugin_MantisGraph_select_bycat = 'By category';
+$s_plugin_MantisGraph_select_summbystatus = 'Summary By status';
+$s_plugin_MantisGraph_select_both = 'Both';
+$s_plugin_MantisGraph_show_as_graph = 'Show as Graph';
+$s_plugin_MantisGraph_show_graph = 'Show Graph';
+$s_plugin_MantisGraph_show_as_table = 'Table';
