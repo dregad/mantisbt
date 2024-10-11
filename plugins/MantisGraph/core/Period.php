@@ -286,17 +286,29 @@ class Period {
 			6 => plugin_lang_get( 'period_last_year' ),
 			10 => plugin_lang_get( 'period_select' ),
 		);
+
 		$t_default = gpc_get_int( $p_control_name, 0 );
-		$t_formatted_start = $this->get_start_formatted();
-		$t_formatted_end = $this->get_end_formatted();
-		$t_ret = '<div id="period_menu">';
-		$t_ret .= get_dropdown( $t_periods, $p_control_name, $t_default, false, false );
-		$t_ret .= "</div> <br />\n";
-		$t_ret .= "<div id=\"dates\">\n";
-		$t_ret .= lang_get( 'from_date' ) . ' <input type="text" id="start_date" name="start_date" size="12" value="' . $t_formatted_start . '" class="datetimepicker input-xs" disabled="disabled" />' . "\n";
-		$t_ret .= lang_get( 'to_date' ) . ' <input type="text" id="end_date" name="end_date" size="12" value="' . $t_formatted_end . '" class="datetimepicker input-xs" disabled="disabled" />' . "\n";
-		$t_ret .= "</div>\n";
-		return $t_ret;
+		$t_dropdown = get_dropdown( $t_periods, $p_control_name, $t_default, false, false );
+		$t_date_input_pattern = '<label for="%2$s" class="padding-right-4">%1$s</label>'
+			. '<input type="text" id="%2$s" name="%2$s" size="14" '
+			. 'value="%3$s" class="datetimepicker input-xs" disabled="disabled" '
+			. 'data-picker-locale="' . lang_get_current_datetime_locale() . '" '
+			. 'data-picker-format="' . config_get( 'datetime_picker_format' ) . '"'
+			. '/>'
+			. icon_get( 'fa-calendar', 'fa-xlg datetimepicker' );
+		$t_from_date = sprintf( $t_date_input_pattern, lang_get( 'from_date' ), 'start_date', $this->get_start_formatted() );
+		$t_to_date = sprintf( $t_date_input_pattern, lang_get( 'to_date' ), 'end_date', $this->get_end_formatted() );
+
+		return <<< HTML
+			<div id="period_menu">
+				$t_dropdown
+			</div>
+			<br>
+			<div id="dates">
+				<div class="pull-left padding-right-8">$t_from_date</div>
+				<div class="pull-left">$t_to_date</div>
+			</div>
+		HTML;
 	}
 
 	/**

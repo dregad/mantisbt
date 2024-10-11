@@ -507,16 +507,14 @@ $(document).ready( function() {
 	});
 
 	/* For Period.php bundled with the core MantisGraph plugin */
-	$('#dates > input[type=image].datetime').hide();
-	$('#period_menu > select#interval').change(function() {
-		if ($(this).val() == 10) {
-			$('#dates > input[type=text].datetime').prop('disabled', false);
-			$('#dates > input[type=image].datetime').show();
-		} else {
-			$('#dates > input[type=text].datetime').prop('disabled', true);
-			$('#dates > input[type=image].datetime').hide();
-		}
+	var period_selector = $('#period_menu > select#interval');
+	function period_enable_date_fields() {
+		$('#dates input.datetimepicker').prop('disabled', period_selector.val() != 10);
+	}
+	period_selector.change(function() {
+		period_enable_date_fields();
 	});
+	period_enable_date_fields();
 
 	$(document).on('change', '#tag_select', function() {
 		var tagSeparator = $('#tag_separator').val();
