@@ -290,7 +290,7 @@ class Period {
 		$t_default = gpc_get_int( $p_control_name, 0 );
 		$t_dropdown = get_dropdown( $t_periods, $p_control_name, $t_default, false, false );
 		$t_date_input_pattern = '<label for="%2$s" class="padding-right-4">%1$s</label>'
-			. '<input type="text" id="%2$s" name="%2$s" size="16" '
+			. '<input type="text" id="%2$s" name="%2$s" size="14" '
 			. 'value="%3$s" class="datetimepicker input-xs" disabled="disabled" '
 			. 'data-picker-locale="' . lang_get_current_datetime_locale() . '" '
 			. 'data-picker-format="' . config_get( 'datetime_picker_format' ) . '"'
