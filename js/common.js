@@ -507,9 +507,11 @@ $(document).ready( function() {
 	});
 
 	/* For Period.php bundled with the core MantisGraph plugin */
-	var period_selector = $('#period_menu > select#interval');
+	let period_selector = $('#period_menu > select#interval');
 	function period_enable_date_fields() {
-		$('#dates input.datetimepicker').prop('disabled', period_selector.val() != 10);
+		let enabled = period_selector.val() == 10;
+		$('#dates input.datetimepicker').prop('disabled', !enabled);
+		$('#dates i.datetimepicker').toggle(enabled);
 	}
 	period_selector.change(function() {
 		period_enable_date_fields();
