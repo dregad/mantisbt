@@ -27,6 +27,7 @@ access_ensure_project_level( config_get( 'view_summary_threshold' ) );
 $t_interval = new Period();
 $t_interval->set_period_from_selector( 'interval' );
 
+# @todo buckets should be fixed for a given period type, and not vary depending on number of days
 $t_interval_days = $t_interval->get_elapsed_days();
 if( $t_interval_days <= 14 ) {
 	$t_incr = 60 * 60; # less than 14 days, use hourly
@@ -93,6 +94,7 @@ $t_select = 'SELECT bug_id, type, old_value, new_value, date_modified FROM {bug_
 $t_result = db_query( $t_select, array( $t_start ) );
 $t_row = db_fetch_array( $t_result );
 
+# @TODO reference time should be absolute (e.g start of current hour/day/week)
 $t_now = time();
 $t_marker[$t_ptr++] = $t_now;
 $t_data[$t_ptr] = $t_data[0];
