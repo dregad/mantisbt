@@ -1467,6 +1467,10 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
  * @access public
  */
 function bug_move( $p_bug_id, $p_target_project_id ) {
+	if( bug_get_field( $p_bug_id, 'project_id' ) == $p_target_project_id ) {
+		return;
+	}
+
 	# Attempt to move disk based attachments to new project file directory.
 	file_move_bug_attachments( $p_bug_id, $p_target_project_id );
 
@@ -1476,9 +1480,8 @@ function bug_move( $p_bug_id, $p_target_project_id ) {
 	# Update the category if needed
 	$t_category_id = bug_get_field( $p_bug_id, 'category_id' );
 
-	# Bug has no category
 	if( $t_category_id == 0 ) {
-		# Category is required in target project, set it to default
+		# Bug has no category and category is required in target project, set it to default
 		if( ON != config_get( 'allow_no_category', null, null, $p_target_project_id ) ) {
 			bug_set_field( $p_bug_id, 'category_id', config_get( 'default_category_for_moves', null, null, $p_target_project_id ) );
 		}
@@ -1499,6 +1502,7 @@ function bug_move( $p_bug_id, $p_target_project_id ) {
 			bug_set_field( $p_bug_id, 'category_id', $t_target_project_category_id );
 		}
 	}
+	email_bug_moved( $p_bug_id, $p_target_project_id );
 }
 
 /**
