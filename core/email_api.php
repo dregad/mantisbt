@@ -433,14 +433,14 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 	$t_final_recipients = array();
 
 	$t_bug = bug_get( $p_bug_id );
-	$t_user_ids = array_keys( $t_recipients );
-	user_cache_array_rows( $t_user_ids );
-	user_pref_cache_array_rows( $t_user_ids );
-	user_pref_cache_array_rows( $t_user_ids, $t_bug->project_id );
+	$t_recipient_user_ids = array_keys( $t_recipients );
+	user_cache_array_rows( $t_recipient_user_ids );
+	user_pref_cache_array_rows( $t_recipient_user_ids );
+	user_pref_cache_array_rows( $t_recipient_user_ids, $t_bug->project_id );
 
 	# Check whether users should receive the emails
 	# and put email address to $t_recipients[user_id]
-	foreach( $t_recipients as $t_id => $t_ignore ) {
+	foreach( $t_recipient_user_ids as $t_id) {
 		# Possibly eliminate the current user
 		if( ( auth_get_current_user_id() == $t_id ) && ( OFF == config_get( 'email_receive_own' ) ) ) {
 			log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (own action)', $p_bug_id, $t_id );
@@ -1155,6 +1155,25 @@ function email_bugnote_add( $p_bugnote_id, $p_files = array(), $p_exclude_user_i
 		'bugnote',
 		$t_recipients_verbose,
 		$t_message_id );
+}
+
+/**
+ * Send notices when a bug is MOVED.
+ *
+ * @param int $p_bug_id
+ * @param int $p_project_id
+ *
+ * @return void
+ */
+function email_bug_moved( $p_bug_id, int $p_project_id ) {
+	$t_project_name = project_get_name( $p_project_id );
+	log_event( LOG_EMAIL, sprintf( 'Issue #%d moved to project #%d', $p_bug_id, $p_project_id ) );
+	email_generic(
+		$p_bug_id,
+		'updated',
+		'email_notification_title_for_action_bug_moved',
+		[ $t_project_name ]
+	);
 }
 
 /**
