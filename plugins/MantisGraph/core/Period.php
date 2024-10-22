@@ -28,6 +28,18 @@
  * @package MantisBT
  */
 class Period {
+	const TYPE_NONE = 0;
+	const TYPE_MONTH_TO_DATE = 1;
+	const TYPE_MONTH_PREVIOUS = 2;
+	const TYPE_QUARTER_TO_DATE = 3;
+	const TYPE_QUARTER_PREVIOUS = 4;
+	const TYPE_YEAR_TO_DATE = 5;
+	const TYPE_YEAR_PREVIOUS = 6;
+	const TYPE_WEEK_TO_DATE = 7;
+	const TYPE_WEEK_PREVIOUS = 8;
+	const TYPE_WEEK_LAST_TWO = 9;
+	const TYPE_ARBITRARY_DATES = 10;
+
 	/**
 	 * @var DateTimeImmutable Start Date.
 	 */
@@ -283,22 +295,21 @@ class Period {
 	 * @return string
 	 */
 	function period_selector( string $p_control_name ): string {
-		# @TODO use constants
 		$t_periods = array(
-			0 => plugin_lang_get( 'period_none' ),
-			7 => plugin_lang_get( 'period_this_week' ),
-			8 => plugin_lang_get( 'period_last_week' ),
-			9 => plugin_lang_get( 'period_two_weeks' ),
-			1 => plugin_lang_get( 'period_this_month' ),
-			2 => plugin_lang_get( 'period_last_month' ),
-			3 => plugin_lang_get( 'period_this_quarter' ),
-			4 => plugin_lang_get( 'period_last_quarter' ),
-			5 => plugin_lang_get( 'period_year_to_date' ),
-			6 => plugin_lang_get( 'period_last_year' ),
-			10 => plugin_lang_get( 'period_select' ),
+			self::TYPE_NONE => plugin_lang_get( 'period_none' ),
+			self::TYPE_WEEK_TO_DATE => plugin_lang_get( 'period_this_week' ),
+			self::TYPE_WEEK_PREVIOUS => plugin_lang_get( 'period_last_week' ),
+			self::TYPE_WEEK_LAST_TWO => plugin_lang_get( 'period_two_weeks' ),
+			self::TYPE_MONTH_TO_DATE => plugin_lang_get( 'period_this_month' ),
+			self::TYPE_MONTH_PREVIOUS => plugin_lang_get( 'period_last_month' ),
+			self::TYPE_QUARTER_TO_DATE => plugin_lang_get( 'period_this_quarter' ),
+			self::TYPE_QUARTER_PREVIOUS => plugin_lang_get( 'period_last_quarter' ),
+			self::TYPE_YEAR_TO_DATE => plugin_lang_get( 'period_year_to_date' ),
+			self::TYPE_YEAR_PREVIOUS => plugin_lang_get( 'period_last_year' ),
+			self::TYPE_ARBITRARY_DATES => plugin_lang_get( 'period_select' ),
 		);
 
-		$t_default = gpc_get_int( $p_control_name, 0 );
+		$t_default = gpc_get_int( $p_control_name, self::TYPE_NONE );
 		$t_dropdown = get_dropdown( $t_periods, $p_control_name, $t_default, false, false );
 		$t_date_input_pattern = '<label for="%2$s" class="padding-right-4">%1$s</label>'
 			. '<input type="text" id="%2$s" name="%2$s" size="14" '
@@ -333,37 +344,36 @@ class Period {
 	 * @TODO consider moving to constructor
 	 */
 	function set_period_from_selector( string $p_control_name, string $p_start_field = 'start_date', string $p_end_field = 'end_date' ) {
-		$t_default = gpc_get_int( $p_control_name, 0 );
-		# @TODO use constants
+		$t_default = gpc_get_int( $p_control_name, self::TYPE_NONE );
 		switch( $t_default ) {
-			case 1:
+			case self::TYPE_MONTH_TO_DATE:
 				$this->month_to_date();
 				break;
-			case 2:
+			case self::TYPE_MONTH_PREVIOUS:
 				$this->last_month();
 				break;
-			case 3:
+			case self::TYPE_QUARTER_TO_DATE:
 				$this->quarter_to_date();
 				break;
-			case 4:
+			case self::TYPE_QUARTER_PREVIOUS:
 				$this->last_quarter();
 				break;
-			case 5:
+			case self::TYPE_YEAR_TO_DATE:
 				$this->year_to_date();
 				break;
-			case 6:
+			case self::TYPE_YEAR_PREVIOUS:
 				$this->last_year();
 				break;
-			case 7:
+			case self::TYPE_WEEK_TO_DATE:
 				$this->week_to_date();
 				break;
-			case 8:
+			case self::TYPE_WEEK_PREVIOUS:
 				$this->last_week();
 				break;
-			case 9:
+			case self::TYPE_WEEK_LAST_TWO:
 				$this->last_week( 2 );
 				break;
-			case 10:
+			case self::TYPE_ARBITRARY_DATES:
 				$t_date_format = config_get( 'normal_date_format' );
 
 				if( $p_start_field != '' ) {
