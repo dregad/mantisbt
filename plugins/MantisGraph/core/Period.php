@@ -267,7 +267,7 @@ class Period {
 	 * @return string
 	 */
 	function get_start_formatted(): string {
-		return $this->start->format( $this->format );
+		return $this->type != self::TYPE_NONE ? $this->start->format( $this->format ) : '';
 	}
 
 	/**
@@ -276,7 +276,7 @@ class Period {
 	 * @return string
 	 */
 	function get_end_formatted(): string {
-		return $this->end->format( $this->format );
+		return $this->type != self::TYPE_NONE ? $this->end->format( $this->format ) : '';
 	}
 
 	/**
