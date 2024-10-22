@@ -40,6 +40,15 @@ class Period {
 	const TYPE_WEEK_LAST_TWO = 9;
 	const TYPE_ARBITRARY_DATES = 10;
 
+	const BUCKET_HOURLY = 60 * 60;
+	const BUCKET_DAILY = 24 * self::BUCKET_HOURLY;
+	const BUCKET_WEEKLY = 7 * self::BUCKET_DAILY;
+
+	/**
+	 * @var int Period type (see TYPE_* constants).
+	 */
+	private int $type;
+
 	/**
 	 * @var DateTimeImmutable Start Date.
 	 */
@@ -63,6 +72,7 @@ class Period {
 	function __construct() {
 		$this->start = $this->bod();
 		$this->end = $this->eod();
+		$this->type = self::TYPE_NONE;
 
 		$this->format = config_get( 'normal_date_format' );
 	}
@@ -309,8 +319,7 @@ class Period {
 			self::TYPE_ARBITRARY_DATES => plugin_lang_get( 'period_select' ),
 		);
 
-		$t_default = gpc_get_int( $p_control_name, self::TYPE_NONE );
-		$t_dropdown = get_dropdown( $t_periods, $p_control_name, $t_default, false, false );
+		$t_dropdown = get_dropdown( $t_periods, $p_control_name, $this->type, false, false );
 		$t_date_input_pattern = '<label for="%2$s" class="padding-right-4">%1$s</label>'
 			. '<input type="text" id="%2$s" name="%2$s" size="14" '
 			. 'value="%3$s" class="datetimepicker input-xs" disabled="disabled" '
@@ -344,8 +353,8 @@ class Period {
 	 * @TODO consider moving to constructor
 	 */
 	function set_period_from_selector( string $p_control_name, string $p_start_field = 'start_date', string $p_end_field = 'end_date' ) {
-		$t_default = gpc_get_int( $p_control_name, self::TYPE_NONE );
-		switch( $t_default ) {
+		$this->type = gpc_get_int( $p_control_name, self::TYPE_NONE );
+		switch( $this->type ) {
 			case self::TYPE_MONTH_TO_DATE:
 				$this->month_to_date();
 				break;
@@ -391,6 +400,46 @@ class Period {
 					}
 				}
 				break;
+		}
+	}
+
+	/**
+	 * Returns the period's bucket size.
+	 *
+	 * The size is determined based on the period's duration:
+	 * - Less than 2 weeks => hourly
+	 * - Less than 3 months => daily
+	 * - Longer periods => weekly
+	 *
+	 * @return int Bucket size in seconds.
+	 */
+	public function get_bucket_size(): int {
+		switch( $this->type ) {
+			case self::TYPE_WEEK_TO_DATE:
+			case self::TYPE_WEEK_PREVIOUS:
+			case self::TYPE_WEEK_LAST_TWO:
+				return self::BUCKET_HOURLY;
+
+			case self::TYPE_MONTH_TO_DATE:
+			case self::TYPE_MONTH_PREVIOUS:
+			case self::TYPE_QUARTER_TO_DATE:
+			case self::TYPE_QUARTER_PREVIOUS:
+				return self::BUCKET_DAILY;
+
+			case self::TYPE_YEAR_TO_DATE:
+			case self::TYPE_YEAR_PREVIOUS:
+				return self::BUCKET_WEEKLY;
+
+			case self::TYPE_ARBITRARY_DATES:
+			default:
+				$t_interval_days = $this->get_elapsed_days();
+				if( $t_interval_days <= 14 ) {
+					return self::BUCKET_HOURLY;
+				} else if( $t_interval_days <= 92 ) {
+					return self::BUCKET_DAILY;
+				} else {
+					return self::BUCKET_WEEKLY;
+				}
 		}
 	}
 
