@@ -1105,13 +1105,13 @@ function plugin_init( $p_basename ) {
 
 		plugin_push_current( $p_basename );
 
-		# load plugin error strings
+		# Store the error messages in the global language strings array
 		global $g_lang_strings;
 		$t_lang = lang_get_current();
-		$t_plugin_errors = $t_plugin->errors();
+		$t_prefix = "plugin_{$t_plugin->basename}_";
 
-		foreach( $t_plugin_errors as $t_error_name => $t_error_string ) {
-			$t_error_code = "plugin_{$p_basename}_{$t_error_name}";
+		foreach( $t_plugin->errors() as $t_error_name => $t_error_string ) {
+			$t_error_code = $t_prefix . $t_error_name;
 			$g_lang_strings[$t_lang]['MANTIS_ERROR'][$t_error_code] = $t_error_string;
 		}
 

@@ -115,12 +115,63 @@ abstract class MantisPlugin {
 	public function init() {}
 
 	/**
-	 * This function allows plugins to add new error messages for Mantis usage
+	 * This function allows plugins to add new error messages for Mantis usage.
+	 *
+	 * @see errorMessagesFromConstants() Standardized method to define error messages.
 	 *
 	 * @return array The error_name=>error_message list to add
 	 */
 	public function errors() {
 		return array();
+	}
+
+	/**
+	 * Initialize the Plugin's error messages from constants and language strings.
+	 *
+	 * Call this function from the Plugin's {@see error()} method.
+	 *
+	 * Note: The function returns an empty array, as the error messages are
+	 * directly stored in the global language strings array to avoid another
+	 * iteration on the same data in plugin_init().
+	 *
+	 * To define a new error message, a Plugin needs to define:
+	 *   1. a Class Constant with `ERROR_` prefix to reference the error
+	 *   2. a language string named plugin_<BaseName>_<ConstantValue>
+	 * It is recommended to prefix ConstantValue with `error_`.
+	 *
+	 * @param string $p_basename Plugin basename, defaults to current plugin.
+	 *
+	 * @return array Empty array
+	 */
+	protected function errorMessagesFromConstants( string $p_basename = '' ): array
+	{
+		if( !$p_basename ) {
+			$p_basename = $this->basename;
+		}
+
+		# Retrieve all ERROR constants defined in the plugin
+		$t_reflect = new \ReflectionClass( $this );
+		$t_error_constants = array_filter( $t_reflect->getConstants(),
+			function( $t_const_name ) {
+				return strncmp( 'ERROR_', $t_const_name, 6 ) == 0;
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		if( $t_error_constants ) {
+			# Directly store the error messages in the global language strings array
+			global $g_lang_strings;
+			$t_lang = lang_get_current();
+			$t_prefix = "plugin_{$this->basename}_";
+
+			foreach( $t_error_constants as $t_error ) {
+				$t_error_code = $t_prefix . $t_error;
+				$t_error_message = lang_get( $t_error_code, $t_lang );
+				$g_lang_strings[$t_lang]['MANTIS_ERROR'][$t_error_code] = $t_error_message;
+			}
+		}
+
+		return [];
 	}
 
 	/**
