@@ -401,6 +401,7 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 		case 'reopened':
 		case 'resolved':
 		case 'closed':
+		case 'moved':
 		case 'bugnote':
 			$t_pref_field = 'email_on_' . $p_notify_type;
 			if( !$p_bugnote_id ) {
@@ -1170,7 +1171,7 @@ function email_bug_moved( $p_bug_id, int $p_project_id ) {
 	log_event( LOG_EMAIL, sprintf( 'Issue #%d moved to project #%d', $p_bug_id, $p_project_id ) );
 	email_generic(
 		$p_bug_id,
-		'updated',
+		'moved',
 		'email_notification_title_for_action_bug_moved',
 		[ $t_project_name ]
 	);
@@ -2304,7 +2305,7 @@ function email_shutdown_function() {
  * @return array List of actions
  */
 function email_get_actions() {
-	$t_actions = array( 'updated', 'owner', 'reopened', 'deleted', 'bugnote', 'relation', 'monitor' );
+	$t_actions = array( 'updated', 'owner', 'reopened', 'moved', 'deleted', 'bugnote', 'relation', 'monitor' );
 
 	if( config_get( 'enable_sponsorship' ) == ON ) {
 		$t_actions[] = 'sponsor';

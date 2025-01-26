@@ -102,6 +102,11 @@ class UserPreferences {
 	protected $email_on_reopened = null;
 
 	/**
+	 * Receive email on moved bugs
+	 */
+	protected $email_on_moved = null;
+
+	/**
 	 * Receive email on new bugnote
 	 */
 	protected $email_on_bugnote = null;
@@ -145,6 +150,11 @@ class UserPreferences {
 	 * Minimum Severity on which to trigger email if set to receive
 	 */
 	protected $email_on_reopened_min_severity = null;
+
+	/**
+	 * Minimum Severity on which to trigger email if set to receive
+	 */
+	protected $email_on_moved_min_severity = null;
 
 	/**
 	 * Minimum Severity on which to trigger email if set to receive
@@ -201,6 +211,7 @@ class UserPreferences {
 	'email_on_resolved' => array(  'default_email_on_resolved', 'int' ),
 	'email_on_closed' => array(  'default_email_on_closed', 'int' ),
 	'email_on_reopened' => array(  'default_email_on_reopened', 'int' ),
+	'email_on_moved' => array(  'default_email_on_moved', 'int' ),
 	'email_on_bugnote' => array(  'default_email_on_bugnote', 'int' ),
 	'email_on_status' => array(  'default_email_on_status', 'int' ),
 	'email_on_priority' => array(  'default_email_on_priority', 'int' ),
@@ -210,6 +221,7 @@ class UserPreferences {
 	'email_on_resolved_min_severity' => array(  'default_email_on_resolved_minimum_severity', 'int' ),
 	'email_on_closed_min_severity' => array(  'default_email_on_closed_minimum_severity', 'int' ),
 	'email_on_reopened_min_severity' => array(  'default_email_on_reopened_minimum_severity', 'int' ),
+	'email_on_moved_min_severity' => array(  'default_email_on_moved_minimum_severity', 'int' ),
 	'email_on_bugnote_min_severity' => array(  'default_email_on_bugnote_minimum_severity', 'int' ),
 	'email_on_status_min_severity' => array(  'default_email_on_status_minimum_severity', 'int' ),
 	'email_on_priority_min_severity' => array(  'default_email_on_priority_minimum_severity', 'int' ),

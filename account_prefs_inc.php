@@ -270,6 +270,23 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 		</tr>
 		<tr>
 			<td class="category">
+				<?php echo lang_get( 'email_on_moved' ) ?>
+			</td>
+			<td>
+				<label class="inline">
+					<input type="checkbox" class="ace input-sm" id="email-on-moved" name="email_on_moved" <?php check_checked( (int)$t_pref->email_on_moved, ON ); ?> />
+					<span class="lbl"></span>
+				</label>
+				<label for="email-on-moved-min-severity" class="email-on-severity-label"><span><?php echo lang_get( 'with_minimum_severity' ) ?></span></label>
+				<select id="email-on-moved-min-severity" name="email_on_moved_min_severity" class="input-sm">
+						<option value="<?php echo OFF ?>"><?php echo lang_get( 'any' ) ?></option>
+						<option disabled="disabled">-----</option>
+						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_moved_min_severity ) ?>
+					</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="category">
 				<?php echo lang_get( 'email_on_bugnote_added' ) ?>
 			</td>
 			<td>

@@ -354,6 +354,7 @@ if( config_get( 'enable_email_notification' ) == ON ) {
 	get_capability_row_for_email( lang_get( 'email_on_updated' ), 'updated' );
 	get_capability_row_for_email( lang_get( 'email_on_assigned' ), 'owner' );
 	get_capability_row_for_email( lang_get( 'email_on_reopened' ), 'reopened' );
+	get_capability_row_for_email( lang_get( 'email_on_moved' ), 'moved' );
 	get_capability_row_for_email( lang_get( 'email_on_deleted' ), 'deleted' );
 	get_capability_row_for_email( lang_get( 'email_on_bugnote_added' ), 'bugnote' );
 	if( config_get( 'enable_sponsorship' ) == ON ) {

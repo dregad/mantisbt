@@ -904,6 +904,10 @@ $g_upgrade[213] = array( 'UpdateFunction', 'category_status_default' );
 
 # Release marker: 2.27.0
 
+$g_upgrade[214] = array( 'AddColumnSQL', array( db_get_table( 'user_pref' ), "
+	email_on_moved				L		$t_notnull DEFAULT \" '0' \",
+	email_on_moved_min_severity	I2		NOTNULL DEFAULT '10' " ) );
+
 # ----------------------------------------------------------------------------
 # End of schema definition, clear local variables
 #

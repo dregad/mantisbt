@@ -1448,6 +1448,7 @@ $s_add_profiles = 'Add profiles';
 $s_notify_of_new_user_created = 'Notify of new user created';
 $s_email_notification = 'E-mail notification';
 $s_status_changed_to = 'Status changes to';
+$s_email_on_moved = 'E-mail on Moved';
 $s_email_on_deleted = 'E-mail on Deleted';
 $s_email_on_sponsorship_changed = 'E-mail on Sponsorship changed';
 $s_email_on_relationship_changed = 'E-mail on Relationship changed';

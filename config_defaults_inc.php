@@ -557,6 +557,7 @@ $g_default_notify_flags = array(
  * - `owner`:    an Issue has been assigned to a new owner
  * - `reopened`: an Issue has been reopened
  * - `deleted`:  an Issue has been deleted
+ * - `moved`:    an Issue has been moved
  * - `updated`:  an Issue has been updated
  * - `bugnote`:  a bugnote has been added to an Issue
  * - `sponsor`:  sponsorship has changed on this Issue
@@ -1868,6 +1869,11 @@ $g_default_email_on_closed = ON;
 $g_default_email_on_reopened = ON;
 
 /**
+ * @global int $g_default_email_on_reopened
+ */
+$g_default_email_on_moved = OFF;
+
+/**
  *
  * @global int $g_default_email_on_bugnote
  */
@@ -1918,6 +1924,11 @@ $g_default_email_on_closed_minimum_severity = OFF;
  * @global int $g_default_email_on_reopened_minimum_severity
  */
 $g_default_email_on_reopened_minimum_severity = OFF;
+
+/**
+ * @global int $g_default_email_on_reopened
+ */
+$g_default_email_on_moved_minimum_severity = OFF;
 
 /**
  * 'any'
