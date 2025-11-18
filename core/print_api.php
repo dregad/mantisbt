@@ -2143,10 +2143,24 @@ function print_bug_attachment_preview_image( array $p_attachment ) {
 	$t_title = file_get_field( $p_attachment['id'], 'title' );
 	$t_image_url = $p_attachment['download_url'] . '&show_inline=1' . form_security_param( 'file_show_inline' );
 
-	echo "\n<div class=\"bug-attachment-preview-image\">";
+	# Image size
+	$t_content = file_get_content( $p_attachment['id'] );
+	if( empty( $t_content['content'] ) ) {
+		$t_size = '';
+	} else {
+		$t_size = getimagesizefromstring( $t_content['content'] );
+		$t_size = $t_size ? $t_size[3] : '';
+	}
+
+	echo PHP_EOL, '<div class="bug-attachment-preview-image">';
 	echo '<a href="' . string_attribute( $p_attachment['download_url'] ) . '"' . print_attachment_link_target() . '>';
-	echo '<img src="' . string_attribute( $t_image_url ) . '" alt="' . string_attribute( $t_title ) . '" loading="lazy" style="' . string_attribute( $t_preview_style ) . '" />';
-	echo '</a></div>';
+	echo '<img src="' . string_attribute( $t_image_url )
+			. '" alt="' . string_attribute( $t_title )
+			. '" loading="lazy" '
+			. $t_size
+			. ' style="' . string_attribute( $t_preview_style )
+			. '" />';
+	echo '</a>';
 }
 
 /**
