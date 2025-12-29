@@ -5,6 +5,16 @@
 <section id="admin.config.sponsorship">
 	<title>Sponsorship</title>
 
+	<warning>
+		<para>The Sponsorship feature is deprecated and will be removed in
+			a future release.
+		</para>
+		<para>It has not been updated for many years, and is not properly
+			integrated in the MantisBT 2.x user interface (see
+			<ulink url="https://mantisbt.org/bugs/view.php?id=21138">Issue #21138</ulink>).
+		</para>
+	</warning>
+
 	<variablelist>
 		<varlistentry>
 			<term>$g_enable_sponsorship</term>
