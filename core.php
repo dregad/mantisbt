@@ -273,9 +273,11 @@ if( !defined( 'PLUGINS_DISABLED' ) && !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
  * Define an API inclusion function to replace require_once
  *
  * @param string $p_api_name An API file name.
+ *
  * @return void
  */
-function require_api( $p_api_name ) {
+function require_api( string $p_api_name ): void
+{
 	static $s_api_included;
 	global $g_core_path;
 	if( !isset( $s_api_included[$p_api_name] ) ) {
@@ -297,9 +299,11 @@ function require_api( $p_api_name ) {
  * Define an API inclusion function to replace require_once
  *
  * @param string $p_library_name A library file name.
+ *
  * @return void
  */
-function require_lib( $p_library_name ) {
+function require_lib( string $p_library_name ): void
+{
 	static $s_libraries_included;
 	global $g_library_path;
 	if( !isset( $s_libraries_included[$p_library_name] ) ) {
@@ -324,10 +328,12 @@ function require_lib( $p_library_name ) {
 }
 
 /**
- * Checks to see if script was queried through the HTTPS protocol
- * @return boolean True if protocol is HTTPS
+ * Checks whether script was queried through the HTTPS protocol.
+ *
+ * @return bool True if protocol is HTTPS
  */
-function http_is_protocol_https() {
+function http_is_protocol_https(): bool
+{
 	if( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
 		return strtolower( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) == 'https';
 	}
@@ -347,7 +353,8 @@ function http_is_protocol_https() {
  *
  * @return bool True if default $g_path was assigned, false if it was already set.
  */
-function set_default_path() {
+function set_default_path(): bool
+{
 	global $g_path, $g_short_path, $g_config_path;
 
 	# $g_path is set in config_inc.php
@@ -434,9 +441,11 @@ function set_default_path() {
  * Define an autoload function to automatically load classes when referenced
  *
  * @param string $p_class Class name being autoloaded.
+ *
  * @return void
  */
-function autoload_mantis( $p_class ) {
+function autoload_mantis( string $p_class ): void
+{
 	global $g_core_path;
 
 	# Remove namespace from class name
@@ -485,9 +494,11 @@ function autoload_mantis( $p_class ) {
  *
  * @param string $p_extension      Extension name
  * @param string $p_reason_message Justification for requiring the extension
+ *
  * @return bool
  */
-function ensure_php_extension_loaded( $p_extension, $p_reason_message ) {
+function ensure_php_extension_loaded( string $p_extension, string $p_reason_message ): bool
+{
 	if( extension_loaded( $p_extension ) ) {
 		return true;
 	}
