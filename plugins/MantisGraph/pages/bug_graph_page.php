@@ -36,6 +36,7 @@ require_api( 'config_api.php' );
 require_api( 'gpc_api.php' );
 require_api( 'html_api.php' );
 require_api( 'plugin_api.php' );
+require_api( 'datetimepicker_api.php' );
 
 require_js( 'jscalendar/calendar.js' );
 require_js( 'jscalendar/lang/calendar-en.js' );
