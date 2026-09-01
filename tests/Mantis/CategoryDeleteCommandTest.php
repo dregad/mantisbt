@@ -63,4 +63,12 @@ class CategoryDeleteCommandTest extends MantisCoreBase {
 			category_remove( $t_category_id );
 		}
 	}
+
+	public function testCannotDeleteCategoryWithAssociatedIssues() {
+		$this->markTestIncomplete( "Not yet implemented" );
+	}
+
+	public function testDeleteCategoryWithReassigningAssociatedIssues() {
+		$this->markTestIncomplete( "Not yet implemented" );
+	}
 }
