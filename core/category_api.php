@@ -199,14 +199,14 @@ function category_ensure_unique( $p_project_id, $p_name ) {
 }
 
 /**
- * Checks whether the category can be deleted.
- * It is not allowed to delete a category if it is defined as 'default for moves'
+ * Checks whether the category is used as default for moves.
+ *
+ * @param int $p_category_id Category identifier.
+ *
+ * @return bool True if category is used as default, false otherwise.
  * @see $g_default_category_for_moves
- * @param integer $p_category_id Category identifier.
- * @return boolean True if category can be deleted, false otherwise
- * @access public
  */
-function category_can_remove( $p_category_id ) {
+function category_is_default( int $p_category_id ): bool {
 	$t_default_category_id = config_get( 'default_category_for_moves', null, ALL_USERS, ALL_PROJECTS );
 
 	return $p_category_id != $t_default_category_id
@@ -214,18 +214,61 @@ function category_can_remove( $p_category_id ) {
 }
 
 /**
+ * Checks whether the category is linked to any Issues.
+ *
+ * @param int $p_category_id Category identifier.
+ *
+ * @return bool True if there are linked issues, false otherwise.
+ */
+function category_has_bugs( int $p_category_id ): bool {
+	$t_query = new DbQuery();
+	$t_query->sql( 'SELECT id FROM {bug} WHERE category_id='
+		. $t_query->param( $p_category_id )
+	);
+	return false !== $t_query->fetch();
+}
+
+/**
+ * Checks whether the category can be deleted.
+ *
+ * It is not allowed to delete a category if it is
+ * - defined as default for moves {@see category_is_default()}
+ * - linked to any Issues {@see category_has_bugs()}
+ *
+ * @param int $p_category_id Category identifier.
+ *
+ * @return bool True if category can be deleted, false otherwise.
+ * @access public
+ */
+function category_can_remove( int $p_category_id ): bool
+{
+	return !category_is_default( $p_category_id )
+		&& !category_has_bugs( $p_category_id );
+}
+
+/**
  * Trigger an error if the category cannot be deleted.
  *
- * @param int $p_category_id Category identifier
- *                           .
+ * If $p_allow_reassign is true, the function will not check whether
+ *
+ * @param int  $p_category_id    Category identifier.
+ * @param bool $p_allow_reassign False to check for linked issues (default).
+ *
  * @return void
  * @throws ClientException
  * @access public
  */
-function category_ensure_can_remove( $p_category_id ) {
-	if( !category_can_remove( $p_category_id ) ) {
+function category_ensure_can_remove( int $p_category_id, bool $p_allow_reassign = false ): void {
+	if( category_is_default( $p_category_id ) ) {
 		throw new ClientException( "Cannot update default Category",
 			ERROR_CATEGORY_CANNOT_UPDATE_DEFAULT,
+			[ category_get_name( $p_category_id ) ]
+		);
+	}
+
+	if( !$p_allow_reassign && category_has_bugs( $p_category_id ) ) {
+		throw new ClientException( "Cannot delete category with Issues",
+			ERROR_CATEGORY_CANNOT_DELETE_HAS_ISSUES,
 			[ category_get_name( $p_category_id ) ]
 		);
 	}
@@ -322,17 +365,20 @@ function category_update( $p_category_id, $p_name, $p_assigned_to, $p_status = n
 }
 
 /**
- * Remove a category from the project
- * @param integer $p_category_id     Category identifier.
- * @param integer $p_new_category_id New category id (to replace existing category).
+ * Remove a category from the project.
+ *
+ * @param int $p_category_id     Category identifier.
+ * @param int $p_new_category_id New category id (to replace existing category).
+ *
  * @return void
+ * @throws ClientException
  * @access public
  */
 function category_remove( $p_category_id, $p_new_category_id = 0 ) {
 	$t_category_row = category_get_row( $p_category_id );
 
 	category_ensure_exists( $p_category_id );
-	category_ensure_can_remove( $p_category_id );
+	category_ensure_can_remove( $p_category_id, true );
 	if( 0 != $p_new_category_id ) {
 		category_ensure_exists( $p_new_category_id );
 	}
@@ -808,37 +854,6 @@ function category_full_name( $p_category_id, $p_show_project = true, $p_current_
 		}
 
 		return $t_row['name'];
-	}
-}
-
-/**
- * Check category can be deleted 
- * @param string $p_category_id Category identifier.
- * @return boolean Return true if the category valid for delete, otherwise false
- * @access public
- */
-function category_can_delete( $p_category_id ) {
-	db_param_push();
-	$t_query = 'SELECT COUNT(id) FROM {bug} WHERE category_id=' . db_param();
-	$t_bug_count = db_result( db_query( $t_query, array( $p_category_id ) ) );
-	return $t_bug_count == 0;
-}
-
-/**
- * Ensure category can be deleted, otherwise raise an error.
- *
- * @param string $p_category_id Category identifier.
- *
- * @return void
- * @throws ClientException
- * @access public
- */
-function category_ensure_can_delete( $p_category_id ) {
-	if( !category_can_delete( $p_category_id ) ) {
-		throw new ClientException( "Cannot delete category with Issues",
-			ERROR_CATEGORY_CANNOT_DELETE_HAS_ISSUES,
-			[ category_get_name( $p_category_id ) ]
-		);
 	}
 }
 

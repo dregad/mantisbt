@@ -59,10 +59,7 @@ class CategoryDeleteCommand extends Command {
 			throw new ClientException( "Category '$this->category_id' not found", ERROR_CATEGORY_NOT_FOUND, [ $this->category_id ] );
 		}
 
-		category_ensure_can_remove( $this->category_id );
-		if( !$this->option( 'allow_reassign', false ) ) {
-			category_ensure_can_delete( $this->category_id );
-		}
+		category_ensure_can_remove( $this->category_id, $this->option( 'allow_reassign', false ) );
 	}
 
 	/**
