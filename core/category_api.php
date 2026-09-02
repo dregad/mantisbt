@@ -238,6 +238,7 @@ function category_has_bugs( int $p_category_id ): bool {
  * @param int $p_category_id Category identifier.
  *
  * @return bool True if category can be deleted, false otherwise.
+ * @TODO check if it's necessary to add $p_allow_reassign param
  * @access public
  */
 function category_can_remove( int $p_category_id ): bool
