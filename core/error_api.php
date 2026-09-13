@@ -667,6 +667,10 @@ function error_build_parameter_string( $p_param, $p_showtype = true, $p_depth = 
 
 		return '<array> { ' . implode( ', ', $t_results ) . ' }';
 	} else if( is_object( $p_param ) ) {
+		/** @noinspection PhpElementIsNotAvailableInCurrentPhpVersionInspection */
+		if( PHP_VERSION_ID >= 80200 && $p_param instanceof SensitiveParameterValue ) {
+			return '<' . lang_get( 'redacted' ) . '>';
+		}
 		$t_results = array();
 
 		$t_class_name = get_class( $p_param );

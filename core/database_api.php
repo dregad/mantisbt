@@ -137,7 +137,13 @@ $g_db_param = new MantisDbParam();
  * @return bool True if the connection was successful.
  * @throws ClientException
  */
-function db_connect( $p_dsn, $p_hostname = null, $p_username = null, $p_password = null, $p_database_name = null, $p_pconnect = false ) {
+function db_connect( $p_dsn,
+					 $p_hostname = null,
+					 $p_username = null,
+					 #[SensitiveParameter] $p_password = null,
+					 $p_database_name = null,
+					 $p_pconnect = false
+) {
 	global $g_db_connected, $g_db, $g_db_functional_type;
 	$t_db_type = config_get_global( 'db_type' );
 	$g_db_functional_type = db_get_type( $t_db_type );
