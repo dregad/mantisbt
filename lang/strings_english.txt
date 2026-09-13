@@ -1808,3 +1808,4 @@ $s_filter_unused_tags = 'Unused';
 $s_filter_unused = 'Unused';
 $s_unknown = 'unknown';
 $s_optional = 'Optional';
+$s_redacted = 'redacted';
