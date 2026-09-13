@@ -662,7 +662,10 @@ function error_build_parameter_string( $p_param, $p_showtype = true, $p_depth = 
 		$t_results = array();
 
 		foreach( $p_param as $t_key => $t_value ) {
-			$t_results[] = '[' . error_build_parameter_string( $t_key, false, $p_depth ) . '] => ' . error_build_parameter_string( $t_value, false, $p_depth );
+			$t_results[] = '['
+					. error_build_parameter_string( $t_key, false, $p_depth )
+					. '] => '
+					. error_build_parameter_string( $t_value, false, $p_depth );
 		}
 
 		return '<array> { ' . implode( ', ', $t_results ) . ' }';
