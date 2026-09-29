@@ -198,6 +198,7 @@ function http_csp_value() {
 function http_csp_emit_header() {
 	if( !headers_sent() ) {
 		header( 'Content-Security-Policy: ' . http_csp_value() );
+		header( 'Content-Security-Policy-Report-Only:  report-uri /mantis/csp_report.php; ' . http_csp_value() );
 	}
 }
 
