@@ -1495,6 +1495,9 @@ if( 6 == $t_install_state ) {
 			'Database user does not have access to the database ( ' . string_attribute( db_error_msg() ) . ' )'
 		);
 	}
+
+	# Only execute the SQL operations tests if we're connected to the database
+	if( $g_db->IsConnected() ) {
 	?>
 </tr>
 <tr>
@@ -1571,6 +1574,8 @@ if( 6 == $t_install_state ) {
 			'Database user does not have DELETE access to the database ( ' . string_attribute( db_error_msg() ) . ' )'
 		);
 	}
+
+	} # end of $g_db->IsConnected() test
 	?>
 </tr>
 </table>
