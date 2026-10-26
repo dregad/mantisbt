@@ -1145,7 +1145,8 @@ function layout_footer() {
 	#  3) don't do this on pages that auto-refresh
 	#  4) don't do this on the password verification or update page, as it causes the
 	#    verification comparison to fail
-	if( !gpc_get_bool( 'refresh' ) &&
+	if( !defined( 'MANTIS_MAINTENANCE_MODE' ) &&
+		!gpc_get_bool( 'refresh' ) &&
 		auth_is_user_authenticated() &&
 		!current_user_is_anonymous() &&
 		!( is_page_name( 'verify.php' ) || is_page_name( 'account_update.php' ) ) ) {
