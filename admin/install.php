@@ -1491,7 +1491,7 @@ if( 6 == $t_install_state ) {
 	} else {
 		print_test_result(
 			BAD,
-			false,
+			true,
 			'Database user does not have access to the database ( ' . string_attribute( db_error_msg() ) . ' )'
 		);
 	}
